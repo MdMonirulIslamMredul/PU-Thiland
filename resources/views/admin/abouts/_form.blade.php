@@ -1,0 +1,88 @@
+<div class="row g-3">
+    <div class="col-md-8">
+        <label class="form-label">About Title</label>
+        <input name="title" class="form-control" value="{{ old('title', $about->title ?? '') }}" required>
+    </div>
+
+    <div class="col-md-2">
+        <label class="form-label">Years Experience</label>
+        <input name="years_experience" type="number" min="0" class="form-control"
+            value="{{ old('years_experience', $about->years_experience ?? '') }}">
+    </div>
+
+    <div class="col-md-2">
+        <label class="form-label">Establishment Year</label>
+        <input name="establishment_year" type="number" min="1800" class="form-control"
+            value="{{ old('establishment_year', $about->establishment_year ?? '') }}">
+    </div>
+
+    <div class="col-12">
+        <label class="form-label">Page Details</label>
+        <textarea name="page_details" class="form-control about-editor" rows="6">{{ old('page_details', $about->page_details ?? '') }}</textarea>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Banner Image</label>
+        <input type="file" name="banner_image" class="form-control">
+        @if (!empty($about->banner_image ?? null))
+            <img src="{{ asset('storage/' . $about->banner_image) }}" class="img-fluid rounded mt-2"
+                style="max-height: 120px; object-fit: cover;">
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" name="remove_banner_image" value="1"
+                    id="remove_banner_image">
+                <label class="form-check-label" for="remove_banner_image">Remove image</label>
+            </div>
+        @endif
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Key Values (one item per line)</label>
+        <textarea name="key_values_text" class="form-control" rows="6">{{ old('key_values_text', isset($about) && is_array($about->key_values) ? implode(PHP_EOL, $about->key_values) : '') }}</textarea>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Details 1</label>
+        <textarea name="details1" class="form-control about-editor" rows="5">{{ old('details1', $about->details1 ?? '') }}</textarea>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Image 1</label>
+        <input type="file" name="image1" class="form-control">
+        @if (!empty($about->image1 ?? null))
+            <img src="{{ asset('storage/' . $about->image1) }}" class="img-fluid rounded mt-2"
+                style="max-height: 120px; object-fit: cover;">
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" name="remove_image1" value="1" id="remove_image1">
+                <label class="form-check-label" for="remove_image1">Remove image</label>
+            </div>
+        @endif
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Details 2</label>
+        <textarea name="details2" class="form-control about-editor" rows="5">{{ old('details2', $about->details2 ?? '') }}</textarea>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Image 2</label>
+        <input type="file" name="image2" class="form-control">
+        @if (!empty($about->image2 ?? null))
+            <img src="{{ asset('storage/' . $about->image2) }}" class="img-fluid rounded mt-2"
+                style="max-height: 120px; object-fit: cover;">
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" name="remove_image2" value="1" id="remove_image2">
+                <label class="form-check-label" for="remove_image2">Remove image</label>
+            </div>
+        @endif
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Details 3</label>
+        <textarea name="details3" class="form-control about-editor" rows="5">{{ old('details3', $about->details3 ?? '') }}</textarea>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Details 4</label>
+        <textarea name="details4" class="form-control about-editor" rows="5">{{ old('details4', $about->details4 ?? '') }}</textarea>
+    </div>
+</div>
