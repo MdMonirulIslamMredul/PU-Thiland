@@ -27,15 +27,24 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Frontend\UserDashboardController;
+use App\Http\Controllers\Frontend\UserAccountController;
+use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\ProductController;
 use App\Http\Controllers\Frontend\ServiceController;
 use App\Http\Controllers\Frontend\TeamController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout')->middleware('auth');
+Route::post('/checkout', [CartController::class, 'placeOrder'])->name('checkout.place')->middleware('auth');
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
 Route::get('/services/{service:slug}', [ServiceController::class, 'show'])->name('services.show');
 Route::get('/team', [TeamController::class, 'index'])->name('team.index');
@@ -55,6 +64,8 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/profile', [UserAccountController::class, 'updateProfile'])->name('dashboard.profile.update');
+    Route::post('/dashboard/password', [UserAccountController::class, 'updatePassword'])->name('dashboard.password.update');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
@@ -114,7 +125,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::resource('product-categories', AdminProductCategoryController::class)->except(['show'])->middleware('permission:manage products');
         Route::resource('product-subcategories', AdminProductSubcategoryController::class)->except(['show'])->middleware('permission:manage products');
+        Route::get('products/export/excel', [AdminProductController::class, 'exportExcel'])->name('products.export.excel')->middleware('permission:manage products');
+        Route::get('products/export/pdf', [AdminProductController::class, 'exportPdf'])->name('products.export.pdf')->middleware('permission:manage products');
         Route::resource('products', AdminProductController::class)->except(['show'])->middleware('permission:manage products');
+        Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'edit', 'update'])->middleware('permission:manage products');
         Route::resource('services', AdminServiceController::class)->except(['show'])->middleware('permission:manage services');
     });
 });
