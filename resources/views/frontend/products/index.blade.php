@@ -23,8 +23,18 @@
                             <div class="card-body d-flex flex-column">
                                 <h5>{{ $product->title }}</h5>
                                 <p class="text-secondary">{{ $product->short_description }}</p>
-                                <a href="{{ route('products.show', $product->slug) }}"
-                                    class="btn btn-outline-dark btn-sm mt-auto">Details</a>
+                                <div class="mt-auto d-grid gap-2">
+                                    <a href="{{ route('products.show', $product->slug) }}"
+                                        class="btn btn-outline-dark btn-sm">Details</a>
+                                    <form method="POST" action="{{ route('cart.add') }}" class="d-flex gap-2">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+                                        <button type="submit" name="buy_now" value="1"
+                                            class="btn btn-success btn-sm">Buy Now</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>

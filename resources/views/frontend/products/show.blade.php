@@ -19,6 +19,21 @@
                         <p><strong>Price:</strong> ${{ number_format($product->price, 2) }}</p>
                     @endif
                     <div>{!! nl2br(e($product->description)) !!}</div>
+                    <form method="POST" action="{{ route('cart.add') }}" class="mt-4">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-auto">
+                                <input type="number" name="quantity" class="form-control" min="1" value="1"
+                                    style="width: 90px;">
+                            </div>
+                            <div class="col-auto d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">Add to Cart</button>
+                                <button type="submit" name="buy_now" value="1" class="btn btn-success">Buy
+                                    Now</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

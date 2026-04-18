@@ -25,6 +25,26 @@
     </div>
     <div class="col-md-4"><label class="form-label">Price</label><input name="price" type="number" step="0.01"
             class="form-control" value="{{ old('price', $product->price ?? '') }}"></div>
+    <div class="col-md-4"><label class="form-label">Grade</label><input name="grade" class="form-control"
+            value="{{ old('grade', $product->grade ?? '') }}"></div>
+    <div class="col-md-4"><label class="form-label">Open Price</label><input name="open_price" type="number"
+            step="0.01" class="form-control" value="{{ old('open_price', $product->open_price ?? '') }}"></div>
+    <div class="col-md-4"><label class="form-label">Quantity</label><input name="quantity" type="number" step="0.01"
+            class="form-control" value="{{ old('quantity', $product->quantity ?? '') }}"></div>
+    <div class="col-md-4"><label class="form-label">Unit Type</label>
+        <select name="unit_type" class="form-select">
+            <option value="">Select unit type</option>
+            <option value="piece" {{ old('unit_type', $product->unit_type ?? '') == 'piece' ? 'selected' : '' }}>Piece
+            </option>
+            <option value="weight" {{ old('unit_type', $product->unit_type ?? '') == 'weight' ? 'selected' : '' }}>
+                Weight</option>
+        </select>
+    </div>
+    <div class="col-md-4"><label class="form-label">Unit Name</label><input name="unit_name" class="form-control"
+            value="{{ old('unit_name', $product->unit_name ?? '') }}"></div>
+    <div class="col-12"><label class="form-label">Specification</label>
+        <textarea name="specification" class="form-control" rows="3">{{ old('specification', $product->specification ?? '') }}</textarea>
+    </div>
     <div class="col-md-4"><label class="form-label">Sort Order</label><input name="sort_order" type="number"
             class="form-control" value="{{ old('sort_order', $product->sort_order ?? 0) }}"></div>
     <div class="col-md-2 form-check mt-4"><input class="form-check-input" type="checkbox" name="is_featured"

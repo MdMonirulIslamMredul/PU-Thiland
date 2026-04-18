@@ -16,6 +16,12 @@ class Product extends Model
         'description',
         'image',
         'price',
+        'grade',
+        'specification',
+        'open_price',
+        'quantity',
+        'unit_type',
+        'unit_name',
         'product_category_id',
         'product_subcategory_id',
         'is_featured',
@@ -24,6 +30,9 @@ class Product extends Model
     ];
 
     protected $casts = [
+        'price' => 'decimal:2',
+        'open_price' => 'decimal:2',
+        'quantity' => 'decimal:2',
         'is_featured' => 'boolean',
         'status' => 'boolean',
     ];
