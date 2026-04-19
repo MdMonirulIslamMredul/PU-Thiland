@@ -1,6 +1,7 @@
 @php
     $navSetting = $settings ?? null;
     $isHome = request()->routeIs('home');
+    $cartCount = collect(session('cart.items', []))->sum('quantity');
 @endphp
 <nav class="navbar navbar-expand-lg {{ $isHome ? 'navbar-home navbar-home-overlay fixed-top' : 'sticky-top' }} border-bottom"
     data-navbar-home="{{ $isHome ? 'true' : 'false' }}">
@@ -30,6 +31,16 @@
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('contact.index') }}">Contact</a></li>
+                <li class="nav-item position-relative">
+                    <a class="nav-link" href="{{ route('cart.index') }}">
+                        <i class="bi bi-cart3"></i> Cart
+                        @if ($cartCount)
+                            <span
+                                class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle"
+                                style="font-size: 0.65rem;">{{ $cartCount }}</span>
+                        @endif
+                    </a>
+                </li>
                 @guest
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('login') }}">Login</a>

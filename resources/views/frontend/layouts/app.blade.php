@@ -584,29 +584,27 @@
 </head>
 
 <body>
+    @if (session('success') || session('error'))
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+            <div class="toast align-items-center text-bg-{{ session('success') ? 'success' : 'danger' }} border-0 show"
+                role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ session('success') ?? session('error') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    @endif
     @include('frontend.partials.navbar')
 
-    @if (session('success') || session('error') || session('status') || $errors->any())
+    @if (session('status') || $errors->any())
         <div class="flash-alert-floating" aria-live="polite">
             <div class="container">
                 <div class="d-flex justify-content-center">
                     <div class="w-100" style="max-width:1100px;">
-                        @if (session('success'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ session('success') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
-                        @endif
-
-                        @if (session('error'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                {{ session('error') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
-                        @endif
-
                         @if (session('status'))
                             <div class="alert alert-info alert-dismissible fade show" role="alert">
                                 {{ session('status') }}
@@ -743,6 +741,17 @@
             once: true,
             duration: 650
         });
+
+        if (window.bootstrap) {
+            var toastElement = document.querySelector('.toast');
+            if (toastElement) {
+                var toast = new bootstrap.Toast(toastElement, {
+                    delay: 3500,
+                });
+                toast.show();
+            }
+        }
+
         // position floating flash below the navbar exactly
         (function() {
             function setFlashTop() {
