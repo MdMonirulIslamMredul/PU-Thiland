@@ -43,12 +43,25 @@
                 <h5>Payment Details</h5>
                 <p class="mb-2"><strong>Method:</strong>
                     {{ $order->payment_method ? ucfirst(str_replace('_', ' ', $order->payment_method)) : 'N/A' }}</p>
+                <p class="mb-2"><strong>Total Weight:</strong> {{ number_format($order->total_weight ?? 0, 2) }} kg</p>
                 <p class="mb-2"><strong>Recharge Used:</strong> ৳
                     {{ number_format($order->recharge_used_amount ?? 0, 2) }}</p>
                 <p class="mb-2"><strong>Payable Amount:</strong>
                     ${{ number_format(max(0, ($order->total_amount ?? 0) - ($order->recharge_used_amount ?? 0)), 2) }}</p>
                 @if ($order->payment_method === 'wallet')
                     <p class="text-muted small">Amount deducted from customer's recharge balance.</p>
+                @else
+                    <p class="text-muted small">Payment receipt is required for gateway payments.</p>
+                @endif
+                @if ($order->payment_receipt)
+                    <div class="mt-3">
+                        <h6 class="mb-2">Payment Receipt</h6>
+                        <a href="{{ asset('storage/' . $order->payment_receipt) }}" target="_blank">
+                            <img src="{{ asset('storage/' . $order->payment_receipt) }}" alt="Payment Receipt"
+                                class="img-fluid rounded" style="max-height: 250px; object-fit: contain;" />
+                        </a>
+                        <p class="small text-muted mt-2">Click image to open full size.</p>
+                    </div>
                 @endif
             </div>
         </div>

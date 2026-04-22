@@ -28,11 +28,15 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Frontend\UserDashboardController;
 use App\Http\Controllers\Frontend\UserAccountController;
+use App\Http\Controllers\Frontend\RechargeController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\ProductController;
 use App\Http\Controllers\Frontend\ServiceController;
 use App\Http\Controllers\Frontend\TeamController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PaymentGatewayController;
+use App\Http\Controllers\Admin\RechargeOrderController;
+use App\Http\Controllers\Admin\VipRuleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -64,8 +68,14 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/orders/{order}', [UserDashboardController::class, 'showOrder'])->name('user.orders.show');
     Route::post('/dashboard/profile', [UserAccountController::class, 'updateProfile'])->name('dashboard.profile.update');
     Route::post('/dashboard/password', [UserAccountController::class, 'updatePassword'])->name('dashboard.password.update');
+    Route::post('/dashboard/addresses', [UserAccountController::class, 'storeAddress'])->name('dashboard.addresses.store');
+    Route::put('/dashboard/addresses/{address}', [UserAccountController::class, 'updateAddress'])->name('dashboard.addresses.update');
+    Route::delete('/dashboard/addresses/{address}', [UserAccountController::class, 'destroyAddress'])->name('dashboard.addresses.destroy');
+    Route::post('/dashboard/recharge-orders', [RechargeController::class, 'store'])->name('dashboard.recharge-orders.store');
+    Route::post('/cart/reorder', [CartController::class, 'reorder'])->name('cart.reorder');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
@@ -85,6 +95,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/page-content', [PageContentController::class, 'edit'])->name('page-content.edit')->middleware('permission:Web_Settings');
         Route::post('/page-content', [PageContentController::class, 'update'])->name('page-content.update')->middleware('permission:Web_Settings');
 
+        Route::get('users/admins', [UserController::class, 'admins'])->name('users.admins')->middleware('permission:manage users');
         Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->middleware('permission:manage users');
         Route::resource('roles', RoleController::class)->except(['show'])->middleware('permission:manage roles');
         Route::resource('permissions', PermissionController::class)->except(['show'])->middleware('permission:manage permissions');
@@ -128,7 +139,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('products/export/excel', [AdminProductController::class, 'exportExcel'])->name('products.export.excel')->middleware('permission:manage products');
         Route::get('products/export/pdf', [AdminProductController::class, 'exportPdf'])->name('products.export.pdf')->middleware('permission:manage products');
         Route::resource('products', AdminProductController::class)->except(['show'])->middleware('permission:manage products');
-        Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'edit', 'update'])->middleware('permission:manage products');
+        Route::get('orders/export/pdf', [AdminOrderController::class, 'exportPdf'])->name('orders.export.pdf')->middleware('permission:manage orders');
+        Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'edit', 'update'])->middleware('permission:manage orders');
+        Route::resource('payment-gateways', PaymentGatewayController::class)->except(['show'])->middleware('permission:manage orders');
+        Route::resource('recharge-orders', RechargeOrderController::class)->only(['index', 'show', 'update'])->middleware('permission:manage orders');
+        Route::resource('vip-rules', VipRuleController::class)->except(['show']);
         Route::resource('services', AdminServiceController::class)->except(['show'])->middleware('permission:manage services');
     });
 });

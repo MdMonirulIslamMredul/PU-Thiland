@@ -42,6 +42,8 @@
     </div>
     <div class="col-md-4"><label class="form-label">Unit Name</label><input name="unit_name" class="form-control"
             value="{{ old('unit_name', $product->unit_name ?? '') }}"></div>
+    <div class="col-md-4"><label class="form-label">Weight</label><input name="weight" type="number" step="0.01"
+            class="form-control" value="{{ old('weight', $product->weight ?? '') }}"></div>
     <div class="col-12"><label class="form-label">Specification</label>
         <textarea name="specification" class="form-control" rows="3">{{ old('specification', $product->specification ?? '') }}</textarea>
     </div>
