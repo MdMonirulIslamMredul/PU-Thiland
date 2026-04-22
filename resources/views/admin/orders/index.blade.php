@@ -3,6 +3,34 @@
 @section('content')
     <div class="d-flex justify-content-between mb-3">
         <h4>Orders</h4>
+        <a href="{{ route('admin.orders.export.pdf', request()->except('page')) }}"
+            class="btn btn-sm btn-outline-secondary">Export PDF</a>
+    </div>
+    <div class="card p-3 mb-3">
+        <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All statuses</option>
+                    @foreach ($statuses as $key => $label)
+                        <option value="{{ $key }}" {{ $status === $key ? 'selected' : '' }}>{{ $label }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Start date</label>
+                <input type="date" name="start_date" value="{{ $start_date }}" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">End date</label>
+                <input type="date" name="end_date" value="{{ $end_date }}" class="form-control">
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary">Reset</a>
+            </div>
+        </form>
     </div>
     <div class="card p-3">
         <div class="table-responsive">

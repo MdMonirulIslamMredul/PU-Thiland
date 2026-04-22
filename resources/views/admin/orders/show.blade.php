@@ -5,9 +5,53 @@
         <div>
             <h4>Order #{{ $order->id }}</h4>
             <p class="mb-1">Placed by {{ $order->user->name }} ({{ $order->user->email }})</p>
+            @if ($order->user->phone)
+                <p class="mb-1">Phone: {{ $order->user->phone }}</p>
+            @endif
             <p class="text-muted mb-0">Status: <strong>{{ ucfirst($order->status) }}</strong></p>
         </div>
         <a href="{{ route('admin.orders.edit', $order) }}" class="btn btn-primary">Update Status</a>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-lg-6">
+            <div class="card p-3 h-100">
+                <h5>Delivery Information</h5>
+                <p class="mb-1"><strong>Recipient:</strong> {{ $order->delivery_recipient_name ?? $order->user->name }}</p>
+                <p class="mb-1"><strong>Phone:</strong> {{ $order->delivery_phone ?? $order->user->phone }}</p>
+                <p class="mb-0"><strong>Address:</strong></p>
+                <p class="text-muted">{{ $order->delivery_address ?? 'N/A' }}</p>
+                @if ($order->userAddress)
+                    <p class="small text-muted mt-2">Saved Address: {{ $order->userAddress->label ?? 'Default' }}</p>
+                @endif
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card p-3 h-100">
+                <h5>Order Summary</h5>
+                <p class="mb-2"><strong>Order Date:</strong> {{ $order->created_at->format('Y-m-d H:i') }}</p>
+                <p class="mb-2"><strong>Items:</strong> {{ $order->items->sum('quantity') }}</p>
+                <p class="mb-2"><strong>VIP Level:</strong> {{ $order->vip_level ? ucfirst($order->vip_level) : 'None' }}
+                </p>
+                <p class="mb-2"><strong>VIP Discount:</strong> ${{ number_format($order->vip_discount_amount ?? 0, 2) }}
+                </p>
+                <p class="mb-0"><strong>Order Total:</strong> ${{ number_format($order->total_amount, 2) }}</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card p-3 h-100">
+                <h5>Payment Details</h5>
+                <p class="mb-2"><strong>Method:</strong>
+                    {{ $order->payment_method ? ucfirst(str_replace('_', ' ', $order->payment_method)) : 'N/A' }}</p>
+                <p class="mb-2"><strong>Recharge Used:</strong> ৳
+                    {{ number_format($order->recharge_used_amount ?? 0, 2) }}</p>
+                <p class="mb-2"><strong>Payable Amount:</strong>
+                    ${{ number_format(max(0, ($order->total_amount ?? 0) - ($order->recharge_used_amount ?? 0)), 2) }}</p>
+                @if ($order->payment_method === 'wallet')
+                    <p class="text-muted small">Amount deducted from customer's recharge balance.</p>
+                @endif
+            </div>
+        </div>
     </div>
 
     <div class="card p-3 mb-3">

@@ -156,6 +156,7 @@ class ProductController extends Controller
             'quantity' => ['nullable', 'numeric'],
             'unit_type' => ['nullable', 'string', 'in:piece,weight'],
             'unit_name' => ['nullable', 'string', 'max:255'],
+            'weight' => ['nullable', 'numeric'],
             'product_category_id' => ['nullable', 'exists:product_categories,id'],
             'product_subcategory_id' => ['nullable', 'exists:product_subcategories,id'],
             'is_featured' => ['nullable', 'boolean'],
