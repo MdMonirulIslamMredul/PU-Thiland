@@ -13,6 +13,7 @@ use App\Models\Testimonial;
 use App\Models\Service;
 use App\Models\Setting;
 use App\Models\TeamMember;
+use App\Models\Announcement;
 
 class HomeController extends Controller
 {
@@ -28,6 +29,8 @@ class HomeController extends Controller
             'products' => Product::where('status', true)->orderBy('sort_order')->take(8)->get(),
             'blogs' => Blog::where('is_published', true)->latest()->take(3)->get(),
             'teamMembers' => TeamMember::where('status', true)->orderBy('sort_order')->take(4)->get(),
+            'announcements' => Announcement::active()->orderByPriority()->latest('publish_date')->take(4)->get(),
+            'urgentAnnouncements' => Announcement::active()->where('priority', 'urgent')->latest('publish_date')->take(3)->get(),
             'faqs' => Faq::where('status', true)->orderBy('order')->orderBy('id')->get(),
         ]);
     }

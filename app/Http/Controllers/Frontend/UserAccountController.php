@@ -15,10 +15,11 @@ class UserAccountController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $request->user()->id],
         ]);
 
-        $request->user()->update($data);
+        $request->user()->update([
+            'name' => $data['name'],
+        ]);
 
         return redirect()->route('dashboard', ['tab' => 'profile'])
             ->with('success', 'Profile updated successfully.');

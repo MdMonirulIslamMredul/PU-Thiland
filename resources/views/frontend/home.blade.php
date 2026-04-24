@@ -308,6 +308,61 @@
 
 
 
+    @if ($urgentAnnouncements->isNotEmpty() || $announcements->isNotEmpty())
+        <section class="py-5 bg-white">
+            <div class="container">
+                @if ($urgentAnnouncements->isNotEmpty())
+                    <div class="alert alert-danger mb-4">
+                        <h4 class="alert-heading mb-2">Urgent Announcements</h4>
+                        @foreach ($urgentAnnouncements as $announcement)
+                            <div class="mb-2">
+                                <strong>{{ $announcement->title }}</strong> · {{ $announcement->short_description }}
+                                <a href="{{ route('announcements.show', $announcement) }}"
+                                    class="text-decoration-underline">Read more</a>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                @if ($announcements->isNotEmpty())
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <span class="section-subtitle-modern">Announcements</span>
+                            <h2 class="section-title-modern">Latest Important Notices</h2>
+                        </div>
+                        <a href="{{ route('announcements.index') }}" class="btn btn-outline-dark btn-sm">View all
+                            announcements</a>
+                    </div>
+                    <div class="row g-4">
+                        @foreach ($announcements as $announcement)
+                            <div class="col-md-6 col-lg-3" data-aos="fade-up">
+                                <div class="card h-100">
+                                    @if ($announcement->image)
+                                        <img src="{{ asset('storage/' . $announcement->image) }}" class="card-img-top"
+                                            alt="{{ $announcement->title }}">
+                                    @endif
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="mb-3">
+                                            <span
+                                                class="badge bg-{{ $announcement->priority === 'urgent' ? 'danger' : ($announcement->priority === 'high' ? 'warning text-dark' : 'secondary') }} text-uppercase">{{ $announcement->priority }}</span>
+                                            <span class="badge bg-primary text-uppercase">{{ $announcement->type }}</span>
+                                        </div>
+                                        <h5 class="card-title">{{ $announcement->title }}</h5>
+                                        <p class="card-text">{{ $announcement->short_description }}</p>
+                                        <div class="mt-auto">
+                                            <a href="{{ route('announcements.show', $announcement) }}"
+                                                class="btn btn-outline-dark btn-sm">Read More</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </section>
+    @endif
+
     <section class="section-modern section-modern-light" id="about-section">
         @php
             $img1 = !empty($about?->image1)

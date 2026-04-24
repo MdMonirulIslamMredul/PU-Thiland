@@ -18,6 +18,18 @@
                     @if ($product->price)
                         <p><strong>Price:</strong> ${{ number_format($product->price, 2) }}</p>
                     @endif
+                    @if ($product->unit_name || $product->unit_type)
+                        <p><strong>Unit:</strong>
+                            {{ $product->unit_name ?? ucfirst($product->unit_type) }}
+                            @if ($product->unit_type && !$product->unit_name)
+                                ({{ ucfirst($product->unit_type) }})
+                            @endif
+                        </p>
+                    @endif
+                    @if ($product->weight)
+                        <p><strong>Weight:</strong> {{ number_format($product->weight, 2) }}
+                            {{ $product->unit_name ?? ucfirst($product->unit_type) }}</p>
+                    @endif
                     <div>{!! nl2br(e($product->description)) !!}</div>
                     <form method="POST" action="{{ route('cart.add') }}" class="mt-4">
                         @csrf

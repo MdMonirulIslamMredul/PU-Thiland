@@ -69,6 +69,7 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-4">
                     <div>
                         <p class="mb-1">Total items: {{ $items->sum('quantity') }}</p>
+                        <p class="mb-1">Total weight: {{ $totalWeight }} Kg</p>
                         <h4 class="mb-0">Total: ${{ $total }}</h4>
                     </div>
                     <a href="{{ route('checkout') }}" class="btn btn-primary btn-lg">Checkout</a>
