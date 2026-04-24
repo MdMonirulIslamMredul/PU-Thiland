@@ -21,6 +21,8 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Products</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('services.index') }}">Services</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('team.index') }}">Team</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('announcements.index') }}">Announcements</a>
+                </li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('blogs.index') }}">Blog</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
@@ -31,6 +33,21 @@
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('contact.index') }}">Contact</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        {{ strtoupper(app()->getLocale()) }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @foreach (['en' => 'English', 'bn' => 'বাংলা', 'zh' => '中文'] as $locale => $label)
+                            <li>
+                                <a class="dropdown-item {{ app()->getLocale() === $locale ? 'active' : '' }}"
+                                    href="{{ route('locale.switch', $locale) }}">
+                                    {{ $label }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </li>
                 <li class="nav-item position-relative">
                     <a class="nav-link" href="{{ route('cart.index') }}">
                         <i class="bi bi-cart3"></i> Cart
