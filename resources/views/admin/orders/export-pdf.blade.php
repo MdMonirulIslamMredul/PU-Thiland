@@ -6,8 +6,19 @@
     <title>Orders PDF</title>
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'DejaVu Serif', 'DejaVu Sans', serif;
             font-size: 12px;
+        }
+
+        @page {
+            font-family: 'DejaVu Serif', 'DejaVu Sans', serif;
+        }
+
+        table,
+        th,
+        td,
+        body {
+            font-family: 'DejaVu Serif', 'DejaVu Sans', serif;
         }
 
         table {
@@ -61,6 +72,7 @@
                 <th>#</th>
                 <th>User</th>
                 <th>Status</th>
+                <th>Payment Status</th>
                 <th>Total</th>
                 <th>Created</th>
             </tr>
@@ -69,9 +81,27 @@
             @foreach ($orders as $order)
                 <tr>
                     <td class="text-center">{{ $order->id }}</td>
-                    <td>{{ $order->user->name }}<br><small>{{ $order->user->email }}</small></td>
+                    <td>{{ $order->user->name }}
+                        <br>
+                        <small>{{ $order->user->email }}</small>
+
+                        @if ($order->user->phone)
+                            <br>
+                            <small>{{ $order->user->phone }}</small>
+                        @endif
+                    </td>
                     <td class="text-center">{{ ucfirst($order->status) }}</td>
-                    <td class="text-right">${{ number_format($order->total_amount, 2) }}</td>
+                    <td class="text-center">
+                        {{ ucfirst($order->payment_status ?? 'unpaid') }}
+                        @if ($order->payment_status === 'partial')
+                            <div>Paid: ৳{{ number_format($order->paid_amount ?? 0, 2) }}</div>
+                            <div>Due: ৳{{ number_format($order->due_amount ?? 0, 2) }}</div>
+                        @elseif($order->payment_status === 'unpaid')
+                            <div>Due: ৳{{ number_format($order->due_amount ?? $order->total_amount, 2) }}</div>
+                        @endif
+
+                    </td>
+                    <td class="text-right">৳{{ number_format($order->total_amount, 2) }}</td>
                     <td class="text-center">{{ $order->created_at->format('Y-m-d') }}</td>
                 </tr>
             @endforeach
