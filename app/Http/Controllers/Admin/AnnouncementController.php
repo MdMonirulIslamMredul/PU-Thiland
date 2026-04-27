@@ -7,7 +7,6 @@ use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class AnnouncementController extends Controller
 {
@@ -108,10 +107,19 @@ class AnnouncementController extends Controller
     private function validatedData(Request $request, ?int $id = null): array
     {
         $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'array'],
+            'title.en' => ['nullable', 'string', 'max:255'],
+            'title.bn' => ['required', 'string', 'max:255'],
+            'title.zh' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:announcements,slug,' . ($id ?? 'NULL') . ',id'],
-            'short_description' => ['nullable', 'string'],
-            'body' => ['nullable', 'string'],
+            'short_description' => ['required', 'array'],
+            'short_description.en' => ['nullable', 'string'],
+            'short_description.bn' => ['required', 'string'],
+            'short_description.zh' => ['required', 'string'],
+            'body' => ['required', 'array'],
+            'body.en' => ['nullable', 'string'],
+            'body.bn' => ['required', 'string'],
+            'body.zh' => ['required', 'string'],
             'type' => ['required', 'in:notice,announcement,update'],
             'priority' => ['required', 'in:normal,high,urgent'],
             'status' => ['required', 'in:draft,published'],
@@ -121,7 +129,7 @@ class AnnouncementController extends Controller
             'attachment' => ['nullable', 'file', 'max:5120'],
         ]);
 
-        $slug = $data['slug'] ?? Str::slug($data['title']);
+        $slug = $data['slug'] ?? $this->slugFromTranslation($data['title']);
         $data['slug'] = $this->makeUniqueSlug($slug, $id);
 
         return $data;

@@ -71,8 +71,14 @@ class HomepageCarouselController extends Controller
     private function validatedData(Request $request, bool $imageRequired): array
     {
         $data = $request->validate([
-            'title' => ['nullable', 'string', 'max:255'],
-            'subtitle' => ['nullable', 'string'],
+            'title' => ['nullable', 'array'],
+            'title.en' => ['nullable', 'string', 'max:255'],
+            'title.bn' => ['nullable', 'string', 'max:255'],
+            'title.zh' => ['nullable', 'string', 'max:255'],
+            'subtitle' => ['nullable', 'array'],
+            'subtitle.en' => ['nullable', 'string'],
+            'subtitle.bn' => ['nullable', 'string'],
+            'subtitle.zh' => ['nullable', 'string'],
             'image' => array_merge($imageRequired ? ['required'] : ['nullable'], ['image', 'max:4096']),
             'is_active' => ['nullable', 'boolean'],
         ]);

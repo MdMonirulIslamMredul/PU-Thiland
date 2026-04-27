@@ -39,7 +39,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Title</th>
+                    <th>Title (BN / ZH)</th>
                     <th>Type</th>
                     <th>Priority</th>
                     <th>Status</th>
@@ -51,7 +51,14 @@
             <tbody>
                 @forelse($announcements as $announcement)
                     <tr>
-                        <td>{{ $announcement->title }}</td>
+                        <td>
+                            <div><span
+                                    class="badge text-bg-light me-1">BN</span>{{ $announcement->getTranslation('title', 'bn', false) ?: '-' }}
+                            </div>
+                            <div><span
+                                    class="badge text-bg-light me-1">ZH</span>{{ $announcement->getTranslation('title', 'zh', false) ?: '-' }}
+                            </div>
+                        </td>
                         <td>{{ ucfirst($announcement->type) }}</td>
                         <td>{{ ucfirst($announcement->priority) }}</td>
                         <td>{{ ucfirst($announcement->status) }}</td>

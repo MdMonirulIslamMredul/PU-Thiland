@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderPayment;
+use App\Models\VipRule;
+use App\Services\OrderPaymentService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
@@ -11,14 +14,16 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = $this->orderQuery($request)->with('user');
+        $query = $this->orderQuery($request)->with(['user', 'warehousePickingOrder']);
 
         $orders = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
         return view('admin.orders.index', [
             'orders' => $orders,
             'statuses' => Order::statuses(),
+            'paymentStatuses' => Order::paymentStatuses(),
             'status' => $request->input('status', ''),
+            'payment_status' => $request->input('payment_status', ''),
             'start_date' => $request->input('start_date', ''),
             'end_date' => $request->input('end_date', ''),
         ]);
@@ -35,10 +40,62 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
+        $vipDiscountRate = null;
+
+        if ($order->vip_level) {
+            $vipDiscountRate = VipRule::active()
+                ->where('level_name', $order->vip_level)
+                ->value('discount_per_kg');
+        }
+
         return view('admin.orders.show', [
-            'order' => $order->load('user', 'items'),
+            'order' => $order->load('user', 'items', 'warehousePickingOrder', 'payments.paymentGateway'),
             'statuses' => Order::statuses(),
+            'vipDiscountRate' => $vipDiscountRate,
         ]);
+    }
+
+    public function updatePaymentStatus(Request $request, Order $order)
+    {
+        $data = $request->validate([
+            'payment_status' => ['required', 'in:' . implode(',', array_keys(Order::paymentStatuses()))],
+        ]);
+
+        $paymentStatus = $data['payment_status'];
+        $order->payment_status = $paymentStatus;
+
+        if ($paymentStatus === Order::PAYMENT_STATUS_PAID) {
+            $order->paid_amount = $order->total_amount;
+            $order->due_amount = 0;
+        } elseif ($paymentStatus === Order::PAYMENT_STATUS_UNPAID) {
+            $order->paid_amount = 0;
+            $order->due_amount = $order->total_amount;
+        }
+
+        $order->save();
+
+        return redirect()->route('admin.orders.show', $order)->with('success', 'Order payment status updated successfully.');
+    }
+
+    public function updatePaymentRecord(Request $request, Order $order, OrderPayment $payment, OrderPaymentService $orderPaymentService)
+    {
+        abort_unless($payment->order_id === $order->id, 404);
+
+        $data = $request->validate([
+            'status' => ['required', 'in:' . implode(',', [OrderPayment::STATUS_CONFIRMED, OrderPayment::STATUS_FAILED])],
+            'note' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $wasConfirmed = $payment->status === OrderPayment::STATUS_CONFIRMED;
+        $payment->status = $data['status'];
+        $payment->note = $data['note'] ?? $payment->note;
+        $payment->save();
+
+        if ($payment->status === OrderPayment::STATUS_CONFIRMED || $wasConfirmed) {
+            $orderPaymentService->refreshOrderPaymentSummary($order);
+        }
+
+        return redirect()->route('admin.orders.show', $order)->with('success', 'Payment record status updated successfully.');
     }
 
     private function orderQuery(Request $request)
@@ -48,6 +105,12 @@ class OrderController extends Controller
         if ($status = $request->input('status')) {
             if (array_key_exists($status, Order::statuses())) {
                 $query->where('status', $status);
+            }
+        }
+
+        if ($paymentStatus = $request->input('payment_status')) {
+            if (array_key_exists($paymentStatus, Order::paymentStatuses())) {
+                $query->where('payment_status', $paymentStatus);
             }
         }
 

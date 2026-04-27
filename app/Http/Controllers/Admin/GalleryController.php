@@ -69,9 +69,15 @@ class GalleryController extends Controller
     private function validatedData(Request $request): array
     {
         $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'array'],
+            'title.en' => ['required', 'string', 'max:255'],
+            'title.bn' => ['nullable', 'string', 'max:255'],
+            'title.zh' => ['nullable', 'string', 'max:255'],
             'type' => ['required', 'in:photo,video'],
-            'description' => ['nullable', 'string'],
+            'description' => ['nullable', 'array'],
+            'description.en' => ['nullable', 'string'],
+            'description.bn' => ['nullable', 'string'],
+            'description.zh' => ['nullable', 'string'],
             'video_url' => ['nullable', 'url', 'max:255'],
             'status' => ['nullable', 'boolean'],
             'image' => ['nullable', 'image', 'max:2048'],

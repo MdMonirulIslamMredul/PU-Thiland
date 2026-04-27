@@ -1,7 +1,11 @@
 @php $gallery = $gallery ?? null; @endphp
 <div class="row g-3">
-    <div class="col-md-6"><label class="form-label">Title</label><input name="title" class="form-control"
-            value="{{ old('title', optional($gallery)->title) }}" required></div>
+    @include('admin.partials.translatable-field', [
+        'name' => 'title',
+        'label' => 'Title',
+        'model' => $gallery ?? null,
+        'colClass' => 'col-md-6',
+    ])
     <div class="col-md-3"><label class="form-label">Type</label><select name="type" class="form-select">
             <option value="photo" {{ old('type', optional($gallery)->type ?? 'photo') === 'photo' ? 'selected' : '' }}>
                 Photo
@@ -38,8 +42,15 @@
     </div>
     <div class="col-md-6"><label class="form-label">YouTube Link (if type video)</label><input name="video_url"
             class="form-control" value="{{ old('video_url', $gallery->video_url ?? '') }}"></div>
-    <div class="col-12"><label class="form-label">Description</label>
-        <textarea name="description" class="form-control" rows="3">{{ old('description', $gallery->description ?? '') }}</textarea>
+    <div class="col-12">
+        @include('admin.partials.translatable-field', [
+            'name' => 'description',
+            'label' => 'Description',
+            'model' => $gallery ?? null,
+            'type' => 'textarea',
+            'rows' => 3,
+            'colClass' => 'col-12',
+        ])
     </div>
 </div>
 

@@ -1,7 +1,11 @@
 <div class="row g-3">
     <div class="col-md-8">
-        <label class="form-label">About Title</label>
-        <input name="title" class="form-control" value="{{ old('title', $about->title ?? '') }}" required>
+        @include('admin.partials.translatable-field', [
+            'name' => 'title',
+            'label' => 'About Title',
+            'model' => $about ?? null,
+            'colClass' => 'col-md-12',
+        ])
     </div>
 
     <div class="col-md-2">
@@ -17,8 +21,14 @@
     </div>
 
     <div class="col-12">
-        <label class="form-label">Page Details</label>
-        <textarea name="page_details" class="form-control about-editor" rows="6">{{ old('page_details', $about->page_details ?? '') }}</textarea>
+        @include('admin.partials.translatable-field', [
+            'name' => 'page_details',
+            'label' => 'Page Details',
+            'model' => $about ?? null,
+            'type' => 'textarea',
+            'rows' => 6,
+            'colClass' => 'col-12',
+        ])
     </div>
 
     <div class="col-md-6">
@@ -41,8 +51,14 @@
     </div>
 
     <div class="col-md-6">
-        <label class="form-label">Details 1</label>
-        <textarea name="details1" class="form-control about-editor" rows="5">{{ old('details1', $about->details1 ?? '') }}</textarea>
+        @include('admin.partials.translatable-field', [
+            'name' => 'details1',
+            'label' => 'Details 1',
+            'model' => $about ?? null,
+            'type' => 'textarea',
+            'rows' => 5,
+            'colClass' => 'col-md-12',
+        ])
     </div>
 
     <div class="col-md-6">
@@ -59,8 +75,14 @@
     </div>
 
     <div class="col-md-6">
-        <label class="form-label">Details 2</label>
-        <textarea name="details2" class="form-control about-editor" rows="5">{{ old('details2', $about->details2 ?? '') }}</textarea>
+        @include('admin.partials.translatable-field', [
+            'name' => 'details2',
+            'label' => 'Details 2',
+            'model' => $about ?? null,
+            'type' => 'textarea',
+            'rows' => 5,
+            'colClass' => 'col-md-12',
+        ])
     </div>
 
     <div class="col-md-6">
@@ -77,12 +99,24 @@
     </div>
 
     <div class="col-md-6">
-        <label class="form-label">Details 3</label>
-        <textarea name="details3" class="form-control about-editor" rows="5">{{ old('details3', $about->details3 ?? '') }}</textarea>
+        @include('admin.partials.translatable-field', [
+            'name' => 'details3',
+            'label' => 'Details 3',
+            'model' => $about ?? null,
+            'type' => 'textarea',
+            'rows' => 5,
+            'colClass' => 'col-md-12',
+        ])
     </div>
 
     <div class="col-md-6">
-        <label class="form-label">Details 4</label>
-        <textarea name="details4" class="form-control about-editor" rows="5">{{ old('details4', $about->details4 ?? '') }}</textarea>
+        @include('admin.partials.translatable-field', [
+            'name' => 'details4',
+            'label' => 'Details 4',
+            'model' => $about ?? null,
+            'type' => 'textarea',
+            'rows' => 5,
+            'colClass' => 'col-md-12',
+        ])
     </div>
 </div>

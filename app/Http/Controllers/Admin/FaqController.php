@@ -41,8 +41,14 @@ class FaqController extends Controller
     private function validatedData(Request $request): array
     {
         $data = $request->validate([
-            'question' => ['required', 'string', 'max:255'],
-            'answer' => ['required', 'string'],
+            'question' => ['required', 'array'],
+            'question.en' => ['required', 'string', 'max:255'],
+            'question.bn' => ['nullable', 'string', 'max:255'],
+            'question.zh' => ['nullable', 'string', 'max:255'],
+            'answer' => ['required', 'array'],
+            'answer.en' => ['required', 'string'],
+            'answer.bn' => ['nullable', 'string'],
+            'answer.zh' => ['nullable', 'string'],
             'order' => ['nullable', 'integer', 'min:0'],
             'status' => ['nullable', 'boolean'],
         ]);

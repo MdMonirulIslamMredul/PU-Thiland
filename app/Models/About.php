@@ -3,9 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class About extends Model
 {
+    use HasTranslations;
+
+    protected $translatable = [
+        'title',
+        'page_details',
+        'details1',
+        'details2',
+        'details3',
+        'details4',
+    ];
     protected $fillable = [
         'title',
         'page_details',

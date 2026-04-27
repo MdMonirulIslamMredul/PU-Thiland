@@ -58,14 +58,20 @@ class ProductSubcategoryController extends Controller
     {
         $data = $request->validate([
             'product_category_id' => ['required', 'exists:product_categories,id'],
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'array'],
+            'name.en' => ['required', 'string', 'max:255'],
+            'name.bn' => ['nullable', 'string', 'max:255'],
+            'name.zh' => ['nullable', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:product_subcategories,slug,' . ($id ?? 'NULL') . ',id'],
-            'description' => ['nullable', 'string'],
+            'description' => ['nullable', 'array'],
+            'description.en' => ['nullable', 'string'],
+            'description.bn' => ['nullable', 'string'],
+            'description.zh' => ['nullable', 'string'],
             'status' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
+        $data['slug'] = $data['slug'] ?? $this->slugFromTranslation($data['name']);
         $data['status'] = $request->boolean('status', false);
         $data['sort_order'] = $data['sort_order'] ?? 0;
 

@@ -14,11 +14,12 @@
             <form method="POST" action="{{ route('admin.homepage-carousel-images.store') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Title</label>
-                        <input type="text" class="form-control" name="title" value="{{ old('title') }}"
-                            placeholder="Image title">
-                    </div>
+                    @include('admin.partials.translatable-field', [
+                        'name' => 'title',
+                        'label' => 'Title',
+                        'model' => null,
+                        'colClass' => 'col-12',
+                    ])
                     <div class="col-md-6">
                         <label class="form-label">Status</label>
                         <select class="form-select" name="is_active">
@@ -26,10 +27,14 @@
                             <option value="0" @selected(old('is_active') === '0')>Inactive</option>
                         </select>
                     </div>
-                    <div class="col-12">
-                        <label class="form-label">Subtitle</label>
-                        <textarea class="form-control" name="subtitle" rows="3" placeholder="Image subtitle">{{ old('subtitle') }}</textarea>
-                    </div>
+                    @include('admin.partials.translatable-field', [
+                        'name' => 'subtitle',
+                        'label' => 'Subtitle',
+                        'type' => 'textarea',
+                        'rows' => 3,
+                        'model' => null,
+                        'colClass' => 'col-12',
+                    ])
                     <div class="col-md-8">
                         <label class="form-label">Image</label>
                         <input type="file" class="form-control" name="image" required>
@@ -70,11 +75,12 @@
                                     @csrf
                                     @method('PUT')
                                     <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Title</label>
-                                            <input type="text" class="form-control" name="title"
-                                                value="{{ old('title', $slide->title) }}">
-                                        </div>
+                                        @include('admin.partials.translatable-field', [
+                                            'name' => 'title',
+                                            'label' => 'Title',
+                                            'model' => $slide,
+                                            'colClass' => 'col-12',
+                                        ])
                                         <div class="col-md-6">
                                             <label class="form-label">Status</label>
                                             <select class="form-select" name="is_active">
@@ -82,10 +88,14 @@
                                                 <option value="0" @selected(old('is_active', $slide->is_active ? '1' : '0') === '0')>Inactive</option>
                                             </select>
                                         </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Subtitle</label>
-                                            <textarea class="form-control" name="subtitle" rows="3">{{ old('subtitle', $slide->subtitle) }}</textarea>
-                                        </div>
+                                        @include('admin.partials.translatable-field', [
+                                            'name' => 'subtitle',
+                                            'label' => 'Subtitle',
+                                            'type' => 'textarea',
+                                            'rows' => 3,
+                                            'model' => $slide,
+                                            'colClass' => 'col-12',
+                                        ])
                                         <div class="col-12">
                                             <label class="form-label">Current Image</label>
                                             @if ($slide->image)

@@ -8,7 +8,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Title</th>
+                    <th>Title (BN / ZH)</th>
                     <th>Published</th>
                     <th></th>
                 </tr>
@@ -16,7 +16,14 @@
             <tbody>
                 @forelse($blogs as $blog)
                     <tr>
-                        <td>{{ $blog->title }}</td>
+                        <td>
+                            <div><span
+                                    class="badge text-bg-light me-1">BN</span>{{ $blog->getTranslation('title', 'bn', false) ?: '-' }}
+                            </div>
+                            <div><span
+                                    class="badge text-bg-light me-1">ZH</span>{{ $blog->getTranslation('title', 'zh', false) ?: '-' }}
+                            </div>
+                        </td>
                         <td>{{ $blog->is_published ? 'Yes' : 'No' }}</td>
                         <td class="text-end"><a href="{{ route('admin.blogs.edit', $blog) }}"
                                 class="btn btn-sm btn-outline-primary">Edit</a>

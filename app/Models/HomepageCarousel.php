@@ -3,9 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class HomepageCarousel extends Model
 {
+    use HasTranslations;
+
+    protected $translatable = [
+        'title',
+        'subtitle',
+    ];
     protected $fillable = [
         'title',
         'subtitle',

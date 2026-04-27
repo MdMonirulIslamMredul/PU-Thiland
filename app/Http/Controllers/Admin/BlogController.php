@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -70,19 +69,37 @@ class BlogController extends Controller
     private function validatedData(Request $request, ?int $id = null): array
     {
         $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'array'],
+            'title.en' => ['nullable', 'string', 'max:255'],
+            'title.bn' => ['required', 'string', 'max:255'],
+            'title.zh' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:blogs,slug,' . ($id ?? 'NULL') . ',id'],
-            'excerpt' => ['nullable', 'string'],
-            'body' => ['required', 'string'],
-            'meta_title' => ['nullable', 'string', 'max:255'],
-            'meta_description' => ['nullable', 'string'],
-            'seo_keywords' => ['nullable', 'string', 'max:255'],
+            'excerpt' => ['required', 'array'],
+            'excerpt.en' => ['nullable', 'string'],
+            'excerpt.bn' => ['required', 'string'],
+            'excerpt.zh' => ['required', 'string'],
+            'body' => ['required', 'array'],
+            'body.en' => ['nullable', 'string'],
+            'body.bn' => ['required', 'string'],
+            'body.zh' => ['required', 'string'],
+            'meta_title' => ['required', 'array'],
+            'meta_title.en' => ['nullable', 'string', 'max:255'],
+            'meta_title.bn' => ['required', 'string', 'max:255'],
+            'meta_title.zh' => ['required', 'string', 'max:255'],
+            'meta_description' => ['required', 'array'],
+            'meta_description.en' => ['nullable', 'string'],
+            'meta_description.bn' => ['required', 'string'],
+            'meta_description.zh' => ['required', 'string'],
+            'seo_keywords' => ['required', 'array'],
+            'seo_keywords.en' => ['nullable', 'string', 'max:255'],
+            'seo_keywords.bn' => ['required', 'string', 'max:255'],
+            'seo_keywords.zh' => ['required', 'string', 'max:255'],
             'published_at' => ['nullable', 'date'],
             'is_published' => ['nullable', 'boolean'],
             'image' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+        $data['slug'] = $data['slug'] ?? $this->slugFromTranslation($data['title']);
         $data['is_published'] = $request->boolean('is_published', true);
 
         return $data;

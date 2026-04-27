@@ -14,15 +14,20 @@
             <form method="POST" action="{{ route('admin.faqs.store') }}">
                 @csrf
                 <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label">Question</label>
-                        <input type="text" name="question" class="form-control" value="{{ old('question') }}"
-                            placeholder="Enter FAQ question">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Answer</label>
-                        <textarea name="answer" class="form-control" rows="4" placeholder="Enter the answer">{{ old('answer') }}</textarea>
-                    </div>
+                    @include('admin.partials.translatable-field', [
+                        'name' => 'question',
+                        'label' => 'Question',
+                        'model' => null,
+                        'colClass' => 'col-12',
+                    ])
+                    @include('admin.partials.translatable-field', [
+                        'name' => 'answer',
+                        'label' => 'Answer',
+                        'type' => 'textarea',
+                        'rows' => 4,
+                        'model' => null,
+                        'colClass' => 'col-12',
+                    ])
                     <div class="col-md-3">
                         <label class="form-label">Order</label>
                         <input type="number" name="order" class="form-control" value="{{ old('order', 0) }}"
@@ -61,15 +66,20 @@
                         @csrf
                         @method('PUT')
                         <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label">Question</label>
-                                <input type="text" name="question" class="form-control"
-                                    value="{{ old('question', $faq->question) }}">
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Answer</label>
-                                <textarea name="answer" class="form-control" rows="4">{{ old('answer', $faq->answer) }}</textarea>
-                            </div>
+                            @include('admin.partials.translatable-field', [
+                                'name' => 'question',
+                                'label' => 'Question',
+                                'model' => $faq,
+                                'colClass' => 'col-12',
+                            ])
+                            @include('admin.partials.translatable-field', [
+                                'name' => 'answer',
+                                'label' => 'Answer',
+                                'type' => 'textarea',
+                                'rows' => 4,
+                                'model' => $faq,
+                                'colClass' => 'col-12',
+                            ])
                             <div class="col-md-4">
                                 <label class="form-label">Order</label>
                                 <input type="number" name="order" class="form-control"

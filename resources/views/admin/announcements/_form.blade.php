@@ -1,8 +1,11 @@
 <div class="row g-3">
-    <div class="col-md-6">
-        <label class="form-label">Title</label>
-        <input name="title" class="form-control" value="{{ old('title', $announcement->title ?? '') }}" required>
-    </div>
+    @include('admin.partials.multilingual-field', [
+        'name' => 'title',
+        'label' => 'Title',
+        'model' => $announcement ?? null,
+        'colClass' => 'col-md-6',
+        'requiredLocales' => ['bn', 'zh'],
+    ])
     <div class="col-md-6">
         <label class="form-label">Slug</label>
         <input name="slug" class="form-control" value="{{ old('slug', $announcement->slug ?? '') }}">
@@ -47,14 +50,24 @@
         <input type="datetime-local" name="expiry_date" class="form-control"
             value="{{ old('expiry_date', isset($announcement->expiry_date) ? $announcement->expiry_date->format('Y-m-d\TH:i') : '') }}">
     </div>
-    <div class="col-12">
-        <label class="form-label">Short Description</label>
-        <textarea name="short_description" class="form-control" rows="3">{{ old('short_description', $announcement->short_description ?? '') }}</textarea>
-    </div>
-    <div class="col-12">
-        <label class="form-label">Full Details</label>
-        <textarea name="body" class="form-control" rows="6">{{ old('body', $announcement->body ?? '') }}</textarea>
-    </div>
+    @include('admin.partials.multilingual-field', [
+        'name' => 'short_description',
+        'label' => 'Short Description',
+        'model' => $announcement ?? null,
+        'type' => 'textarea',
+        'rows' => 3,
+        'colClass' => 'col-12',
+        'requiredLocales' => ['bn', 'zh'],
+    ])
+    @include('admin.partials.multilingual-field', [
+        'name' => 'body',
+        'label' => 'Full Details',
+        'model' => $announcement ?? null,
+        'type' => 'richtext',
+        'rows' => 6,
+        'colClass' => 'col-12',
+        'requiredLocales' => ['bn', 'zh'],
+    ])
     <div class="col-md-6">
         <label class="form-label">Image</label>
         <input type="file" name="image" class="form-control">

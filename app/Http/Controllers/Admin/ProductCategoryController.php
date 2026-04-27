@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class ProductCategoryController extends Controller
 {
@@ -51,14 +50,20 @@ class ProductCategoryController extends Controller
     private function validatedData(Request $request, ?int $id = null): array
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'array'],
+            'name.en' => ['nullable', 'string', 'max:255'],
+            'name.bn' => ['required', 'string', 'max:255'],
+            'name.zh' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:product_categories,slug,' . ($id ?? 'NULL') . ',id'],
-            'description' => ['nullable', 'string'],
+            'description' => ['required', 'array'],
+            'description.en' => ['nullable', 'string'],
+            'description.bn' => ['required', 'string'],
+            'description.zh' => ['required', 'string'],
             'status' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
+        $data['slug'] = $data['slug'] ?? $this->slugFromTranslation($data['name']);
         $data['status'] = $request->boolean('status', false);
         $data['sort_order'] = $data['sort_order'] ?? 0;
 

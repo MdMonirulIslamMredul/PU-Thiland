@@ -3,9 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class Announcement extends Model
 {
+    use HasTranslations;
+
+    protected $translatable = [
+        'title',
+        'short_description',
+        'body',
+    ];
     protected $fillable = [
         'title',
         'slug',

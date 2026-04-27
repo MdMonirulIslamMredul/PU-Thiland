@@ -10,7 +10,6 @@ use App\Models\ProductSubcategory;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
@@ -46,6 +45,21 @@ class ProductController extends Controller
         $pdf = Pdf::loadView('admin.products.export-pdf', compact('products'));
 
         return $pdf->download('products.pdf');
+    }
+
+    public function report(Request $request)
+    {
+        $products = $this->productQuery($request)->get();
+
+        return view('admin.products.report', [
+            'products' => $products,
+            'categories' => ProductCategory::orderBy('sort_order')->get(),
+            'search' => $request->input('search', ''),
+            'categoryId' => $request->input('category_id', ''),
+            'status' => $request->input('status', ''),
+            'sortBy' => $request->input('sort_by', 'created_at'),
+            'order' => $request->input('order', 'desc'),
+        ]);
     }
 
     public function create()
@@ -145,10 +159,19 @@ class ProductController extends Controller
     private function validatedData(Request $request, ?int $id = null): array
     {
         $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'array'],
+            'title.en' => ['nullable', 'string', 'max:255'],
+            'title.bn' => ['required', 'string', 'max:255'],
+            'title.zh' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:products,slug,' . ($id ?? 'NULL') . ',id'],
-            'short_description' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            'short_description' => ['required', 'array'],
+            'short_description.en' => ['nullable', 'string', 'max:255'],
+            'short_description.bn' => ['required', 'string', 'max:255'],
+            'short_description.zh' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'array'],
+            'description.en' => ['nullable', 'string'],
+            'description.bn' => ['required', 'string'],
+            'description.zh' => ['required', 'string'],
             'price' => ['nullable', 'numeric'],
             'grade' => ['nullable', 'string', 'max:255'],
             'specification' => ['nullable', 'string'],
@@ -165,7 +188,7 @@ class ProductController extends Controller
             'image' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+        $data['slug'] = $data['slug'] ?? $this->slugFromTranslation($data['title']);
         $data['is_featured'] = $request->boolean('is_featured');
         $data['status'] = $request->boolean('status', false);
         $data['sort_order'] = $data['sort_order'] ?? 0;
