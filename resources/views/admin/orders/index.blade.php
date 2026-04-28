@@ -1,17 +1,22 @@
 @extends('admin.layouts.app')
-@section('title', 'Orders')
+@section('title', ln('Orders', 'অর্ডারস', '订单'))
 @section('content')
     <div class="d-flex justify-content-between mb-3">
-        <h4>Orders</h4>
-        <a href="{{ route('admin.orders.export.pdf', request()->except('page')) }}"
-            class="btn btn-sm btn-outline-secondary">Export PDF</a>
+        <h4> {{ ln('Orders', 'অর্ডারস', '订单') }}</h4>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.orders.report', request()->except('page')) }}" class="btn btn-sm btn-outline-primary">
+                {{ ln('Printable Report', 'প্রিন্টেবল রিপোর্ট', '可打印报告') }}</a>
+            {{-- <a href="{{ route('admin.orders.export.pdf', request()->except('page')) }}"
+                class="btn btn-sm btn-outline-secondary">
+                {{ ln('Export PDF', 'পিডিএফ ', '导出 PDF') }}</a> --}}
+        </div>
     </div>
     <div class="card p-3 mb-3">
         <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-3 align-items-end">
             <div class="col-md-2">
-                <label class="form-label">Order Status</label>
+                <label class="form-label"> {{ ln('Order Status', 'অর্ডার অবস্থা', '订单状态') }}</label>
                 <select name="status" class="form-select">
-                    <option value="">All order statuses</option>
+                    <option value=""> {{ ln('All order statuses', 'সব অর্ডার অবস্থা', '所有订单状态') }}</option>
                     @foreach ($statuses as $key => $label)
                         <option value="{{ $key }}" {{ $status === $key ? 'selected' : '' }}>{{ $label }}
                         </option>
@@ -19,9 +24,9 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label">Payment Status</label>
+                <label class="form-label"> {{ ln('Payment Status', 'পেমেন্ট অবস্থা', '支付状态') }}</label>
                 <select name="payment_status" class="form-select">
-                    <option value="">All payment statuses</option>
+                    <option value=""> {{ ln('All payment statuses', 'সব পেমেন্ট অবস্থা', '所有支付状态') }}</option>
                     @foreach ($paymentStatuses as $key => $label)
                         <option value="{{ $key }}" {{ $payment_status === $key ? 'selected' : '' }}>
                             {{ $label }}
@@ -30,16 +35,22 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label">Start date</label>
+                <label class="form-label"> {{ ln('Search user', 'ব্যবহারকারী অনুসন্ধান করুন', '搜索用户') }}</label>
+                <input type="search" name="user_search" value="{{ $user_search }}" class="form-control"
+                    placeholder="{{ ln('Email or phone', 'ইমেল বা ফোন', '电子邮件或电话') }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label"> {{ ln('Start date', 'শুরুর তারিখ', '开始日期') }}</label>
                 <input type="date" name="start_date" value="{{ $start_date }}" class="form-control">
             </div>
             <div class="col-md-2">
-                <label class="form-label">End date</label>
+                <label class="form-label"> {{ ln('End date', 'শেষের তারিখ', '结束日期') }}</label>
                 <input type="date" name="end_date" value="{{ $end_date }}" class="form-control">
             </div>
             <div class="col-md-4 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Filter</button>
-                <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary">Reset</a>
+                <button type="submit" class="btn btn-primary"> {{ ln('Filter', 'ফিল্টার', '筛选') }}</button>
+                <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary">
+                    {{ ln('Reset', 'রিসেট', '重置') }}</a>
             </div>
         </form>
     </div>
@@ -48,12 +59,12 @@
             <table class="table align-middle">
                 <thead>
                     <tr>
-                        <th>Order</th>
-                        <th>User</th>
-                        <th>Total</th>
-                        <th>Payment Status</th>
-                        <th>Status</th>
-                        <th>Created</th>
+                        <th> {{ ln('Order', 'অর্ডার', '订单') }}</th>
+                        <th> {{ ln('User', 'ব্যবহারকারী', '用户') }}</th>
+                        <th> {{ ln('Total', 'মোট', '总计') }}</th>
+                        <th> {{ ln('Payment Status', 'পেমেন্ট অবস্থা', '支付状态') }}</th>
+                        <th> {{ ln('Status', 'অবস্থা', '状态') }}</th>
+                        <th> {{ ln('Created', 'তৈরি হয়েছে', '创建时间') }}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -69,7 +80,7 @@
                                     @endif
                                 </div>
                             </td>
-                            <td>${{ number_format($order->total_amount, 2) }}</td>
+                            <td> ৳{{ number_format($order->total_amount, 2) }}</td>
                             <td>
                                 <span
                                     class="badge bg-{{ $order->payment_status === 'paid' ? 'success' : ($order->payment_status === 'partial' ? 'warning' : 'secondary') }}">{{ ucfirst($order->payment_status ?? 'unpaid') }}</span>
@@ -91,18 +102,19 @@
                             </td>
                             <td>{{ $order->created_at->format('Y-m-d') }}</td>
                             <td class="text-end">
-                                <a href="{{ route('admin.orders.show', $order) }}"
-                                    class="btn btn-sm btn-outline-primary">View</a>
+                                <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
+                                    {{ ln('View', 'দেখুন', '查看') }}</a>
                                 @if ($order->status === 'confirmed' && $order->warehousePickingOrder)
-                                    <span class="badge bg-info text-dark">Picking created</span>
+                                    <span class="badge bg-info text-dark">
+                                        {{ ln('Picking created', 'পিকিং তৈরি হয়েছে', '已创建拣货') }}</span>
                                 @endif
                                 <a href="{{ route('admin.orders.edit', $order) }}"
-                                    class="btn btn-sm btn-outline-secondary">Update</a>
+                                    class="btn btn-sm btn-outline-secondary"> {{ ln('Update', 'আপডেট', '更新') }}</a>
                             </td>
                         </tr>
                         @empty
                             <tr>
-                                <td colspan="7">No orders found.</td>
+                                <td colspan="7"> {{ ln('No orders found.', 'কোন অর্ডার পাওয়া যায়নি.', '未找到订单.') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
