@@ -13,13 +13,27 @@ class RechargeOrderController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only(['status', 'date_from', 'date_to']);
+        $filters = $request->only(['status', 'date_from', 'date_to', 'user_search']);
 
         return view('admin.recharge-orders.index', [
             'orders' => $this->rechargeOrderService->getAll($filters),
             'filterStatus' => $filters['status'] ?? '',
             'filterDateFrom' => $filters['date_from'] ?? '',
             'filterDateTo' => $filters['date_to'] ?? '',
+            'filterUserSearch' => $filters['user_search'] ?? '',
+        ]);
+    }
+
+    public function report(Request $request)
+    {
+        $filters = $request->only(['status', 'date_from', 'date_to', 'user_search']);
+
+        return view('admin.recharge-orders.report', [
+            'orders' => $this->rechargeOrderService->getAll($filters),
+            'filterStatus' => $filters['status'] ?? '',
+            'filterDateFrom' => $filters['date_from'] ?? '',
+            'filterDateTo' => $filters['date_to'] ?? '',
+            'filterUserSearch' => $filters['user_search'] ?? '',
         ]);
     }
 

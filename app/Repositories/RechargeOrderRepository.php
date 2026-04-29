@@ -23,6 +23,14 @@ class RechargeOrderRepository
             $query->whereDate('created_at', '<=', $filters['date_to']);
         }
 
+        if (!empty($filters['user_search'])) {
+            $userSearch = trim($filters['user_search']);
+            $query->whereHas('user', function ($query) use ($userSearch) {
+                $query->where('email', 'like', "%{$userSearch}%")
+                    ->orWhere('phone', 'like', "%{$userSearch}%");
+            });
+        }
+
         return $query
             ->orderByRaw("(CASE WHEN status='pending' THEN 0 WHEN status='approved' THEN 1 ELSE 2 END)")
             ->latest()
