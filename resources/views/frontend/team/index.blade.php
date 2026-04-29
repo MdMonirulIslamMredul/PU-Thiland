@@ -1,11 +1,11 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Our Team')
+@section('title', __('site.team.title'))
 
 @section('content')
     <section class="py-5">
         <div class="container">
-            <h1 class="section-title mb-4">Meet Our Team</h1>
+            <h1 class="section-title mb-4">{{ __('site.team.heading') }}</h1>
             <div class="row g-4">
                 @forelse($teamMembers as $member)
                     <div class="col-md-6 col-lg-3" data-aos="fade-up">
@@ -24,7 +24,7 @@
                                     href="{{ $member->linkedin_url ?: '#' }}"><i class="bi bi-linkedin"></i></a><a
                                     href="{{ $member->twitter_url ?: '#' }}"><i class="bi bi-twitter-x"></i></a></div>
                         </div>
-                </div>@empty<p>No team members found.</p>
+                </div>@empty<p>{{ __('site.team.no_team_members') }}</p>
                 @endforelse
             </div>
             <div class="mt-4">{{ $teamMembers->links() }}</div>

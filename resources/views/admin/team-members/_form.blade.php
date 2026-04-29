@@ -1,10 +1,25 @@
 <div class="row g-3">
-    <div class="col-md-6"><label class="form-label">Name</label><input name="name" class="form-control"
-            value="{{ old('name', $teamMember->name ?? '') }}" required></div>
-    <div class="col-md-6"><label class="form-label">Designation</label><input name="designation" class="form-control"
-            value="{{ old('designation', $teamMember->designation ?? '') }}" required></div>
-    <div class="col-12"><label class="form-label">Bio</label>
-        <textarea name="bio" class="form-control" rows="3">{{ old('bio', $teamMember->bio ?? '') }}</textarea>
+    @include('admin.partials.translatable-field', [
+        'name' => 'name',
+        'label' => 'Name',
+        'model' => $teamMember ?? null,
+        'colClass' => 'col-md-6',
+    ])
+    @include('admin.partials.translatable-field', [
+        'name' => 'designation',
+        'label' => 'Designation',
+        'model' => $teamMember ?? null,
+        'colClass' => 'col-md-6',
+    ])
+    <div class="col-12">
+        @include('admin.partials.translatable-field', [
+            'name' => 'bio',
+            'label' => 'Bio',
+            'model' => $teamMember ?? null,
+            'type' => 'textarea',
+            'rows' => 3,
+            'colClass' => 'col-12',
+        ])
     </div>
     <div class="col-md-4"><label class="form-label">Facebook URL</label><input name="facebook_url" class="form-control"
             value="{{ old('facebook_url', $teamMember->facebook_url ?? '') }}"></div>

@@ -3,9 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class Setting extends Model
 {
+    use HasTranslations;
+
+    protected $translatable = [
+        'site_name',
+        'meta_title',
+        'meta_description',
+        'seo_keywords',
+        'hero_title',
+        'hero_subtitle',
+        'company_intro',
+        'cta_title',
+        'cta_text',
+        'cta_button_text',
+        'about_title',
+        'about_content',
+        'mission',
+        'vision',
+        'history',
+        'contact_address',
+    ];
     protected $fillable = [
         'site_name',
         'logo_path',

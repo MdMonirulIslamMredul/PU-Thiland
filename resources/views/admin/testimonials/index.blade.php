@@ -14,16 +14,18 @@
             <form method="POST" action="{{ route('admin.testimonials.store') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Client Name</label>
-                        <input type="text" name="name" class="form-control" value="{{ old('name') }}"
-                            placeholder="Client name">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Designation / Company</label>
-                        <input type="text" name="designation" class="form-control" value="{{ old('designation') }}"
-                            placeholder="CEO, Company Name">
-                    </div>
+                    @include('admin.partials.translatable-field', [
+                        'name' => 'name',
+                        'label' => 'Client Name',
+                        'model' => null,
+                        'colClass' => 'col-md-4',
+                    ])
+                    @include('admin.partials.translatable-field', [
+                        'name' => 'designation',
+                        'label' => 'Designation / Company',
+                        'model' => null,
+                        'colClass' => 'col-md-4',
+                    ])
                     <div class="col-md-2">
                         <label class="form-label">Rating</label>
                         <select name="rating" class="form-select">
@@ -38,8 +40,14 @@
                         <input type="file" name="image" class="form-control">
                     </div>
                     <div class="col-12">
-                        <label class="form-label">Message</label>
-                        <textarea name="message" class="form-control" rows="4" placeholder="Client feedback">{{ old('message') }}</textarea>
+                        @include('admin.partials.translatable-field', [
+                            'name' => 'message',
+                            'label' => 'Message',
+                            'type' => 'textarea',
+                            'rows' => 4,
+                            'model' => null,
+                            'colClass' => 'col-12',
+                        ])
                     </div>
                     <div class="col-12 d-flex align-items-center gap-3">
                         <div class="form-check">
@@ -70,16 +78,18 @@
                         @csrf
                         @method('PUT')
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Client Name</label>
-                                <input type="text" name="name" class="form-control"
-                                    value="{{ old('name', $testimonial->name) }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Designation / Company</label>
-                                <input type="text" name="designation" class="form-control"
-                                    value="{{ old('designation', $testimonial->designation) }}">
-                            </div>
+                            @include('admin.partials.translatable-field', [
+                                'name' => 'name',
+                                'label' => 'Client Name',
+                                'model' => $testimonial,
+                                'colClass' => 'col-md-6',
+                            ])
+                            @include('admin.partials.translatable-field', [
+                                'name' => 'designation',
+                                'label' => 'Designation / Company',
+                                'model' => $testimonial,
+                                'colClass' => 'col-md-6',
+                            ])
                             <div class="col-md-4">
                                 <label class="form-label">Rating</label>
                                 <select name="rating" class="form-select">
@@ -99,8 +109,14 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="form-label">Message</label>
-                                <textarea name="message" class="form-control" rows="4">{{ old('message', $testimonial->message) }}</textarea>
+                                @include('admin.partials.translatable-field', [
+                                    'name' => 'message',
+                                    'label' => 'Message',
+                                    'type' => 'textarea',
+                                    'rows' => 4,
+                                    'model' => $testimonial,
+                                    'colClass' => 'col-12',
+                                ])
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Photo</label>
@@ -122,8 +138,7 @@
                         </div>
                     </form>
 
-                    <form method="POST" action="{{ route('admin.testimonials.destroy', $testimonial) }}"
-                        class="mt-3">
+                    <form method="POST" action="{{ route('admin.testimonials.destroy', $testimonial) }}" class="mt-3">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-outline-danger"

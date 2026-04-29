@@ -64,9 +64,18 @@ class TestimonialController extends Controller
     private function validatedData(Request $request): array
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'designation' => ['nullable', 'string', 'max:255'],
-            'message' => ['required', 'string'],
+            'name' => ['required', 'array'],
+            'name.en' => ['required', 'string', 'max:255'],
+            'name.bn' => ['nullable', 'string', 'max:255'],
+            'name.zh' => ['nullable', 'string', 'max:255'],
+            'designation' => ['nullable', 'array'],
+            'designation.en' => ['nullable', 'string', 'max:255'],
+            'designation.bn' => ['nullable', 'string', 'max:255'],
+            'designation.zh' => ['nullable', 'string', 'max:255'],
+            'message' => ['required', 'array'],
+            'message.en' => ['required', 'string'],
+            'message.bn' => ['nullable', 'string'],
+            'message.zh' => ['nullable', 'string'],
             'rating' => ['nullable', 'integer', 'min:1', 'max:5'],
             'status' => ['nullable', 'boolean'],
             'image' => ['nullable', 'image', 'max:2048'],

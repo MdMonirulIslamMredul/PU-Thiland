@@ -105,23 +105,35 @@
             </div>
 
             <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label">Site Name</label>
-                    <input class="form-control" name="site_name" value="{{ old('site_name', $setting->site_name) }}"
-                        required>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Meta Title</label>
-                    <input class="form-control" name="meta_title" value="{{ old('meta_title', $setting->meta_title) }}">
+                @include('admin.partials.translatable-field', [
+                    'name' => 'site_name',
+                    'label' => 'Site Name',
+                    'model' => $setting,
+                    'colClass' => 'col-md-6',
+                ])
+                @include('admin.partials.translatable-field', [
+                    'name' => 'meta_title',
+                    'label' => 'Meta Title',
+                    'model' => $setting,
+                    'colClass' => 'col-md-6',
+                ])
+                <div class="col-12">
+                    @include('admin.partials.translatable-field', [
+                        'name' => 'meta_description',
+                        'label' => 'Meta Description',
+                        'type' => 'textarea',
+                        'rows' => 2,
+                        'model' => $setting,
+                        'colClass' => 'col-12',
+                    ])
                 </div>
                 <div class="col-12">
-                    <label class="form-label">Meta Description</label>
-                    <textarea class="form-control" name="meta_description" rows="2">{{ old('meta_description', $setting->meta_description) }}</textarea>
-                </div>
-                <div class="col-12">
-                    <label class="form-label">SEO Keywords</label>
-                    <input class="form-control" name="seo_keywords"
-                        value="{{ old('seo_keywords', $setting->seo_keywords) }}">
+                    @include('admin.partials.translatable-field', [
+                        'name' => 'seo_keywords',
+                        'label' => 'SEO Keywords',
+                        'model' => $setting,
+                        'colClass' => 'col-12',
+                    ])
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Facebook URL</label>

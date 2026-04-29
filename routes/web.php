@@ -161,14 +161,18 @@ Route::middleware(['setlocale'])->group(function () {
             Route::resource('product-subcategories', AdminProductSubcategoryController::class)->except(['show'])->middleware('permission:manage products');
             Route::get('products/export/excel', [AdminProductController::class, 'exportExcel'])->name('products.export.excel')->middleware('permission:manage products');
             Route::get('products/export/pdf', [AdminProductController::class, 'exportPdf'])->name('products.export.pdf')->middleware('permission:manage products');
+            Route::get('products/report', [AdminProductController::class, 'report'])->name('products.report')->middleware('permission:manage products');
             Route::resource('products', AdminProductController::class)->except(['show'])->middleware('permission:manage products');
             Route::get('orders/export/pdf', [AdminOrderController::class, 'exportPdf'])->name('orders.export.pdf')->middleware('permission:manage orders');
+            Route::get('orders/report', [AdminOrderController::class, 'report'])->name('orders.report')->middleware('permission:manage orders');
             Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'edit', 'update'])->middleware('permission:manage orders');
             Route::put('orders/{order}/payment-status', [AdminOrderController::class, 'updatePaymentStatus'])->name('orders.payment-status.update')->middleware('permission:manage orders');
             Route::put('orders/{order}/payments/{payment}', [AdminOrderController::class, 'updatePaymentRecord'])->name('orders.payments.update')->middleware('permission:manage orders');
             Route::resource('payment-gateways', PaymentGatewayController::class)->except(['show'])->middleware('permission:manage orders');
+            Route::get('recharge-orders/report', [RechargeOrderController::class, 'report'])->name('recharge-orders.report')->middleware('permission:manage orders');
             Route::resource('recharge-orders', RechargeOrderController::class)->only(['index', 'show', 'update'])->middleware('permission:manage orders');
             Route::get('warehouse', [WarehouseController::class, 'dashboard'])->name('warehouse.dashboard')->middleware('permission:manage warehouse');
+            Route::get('warehouse/orders/{order}', [WarehouseController::class, 'orderDetails'])->name('warehouse.orders.show')->middleware('permission:manage warehouse');
             Route::resource('warehouse/inventory', WarehouseInventoryController::class)->except(['show'])->middleware('permission:manage warehouse');
             Route::resource('warehouse/picking-orders', WarehousePickingOrderController::class)->only(['index', 'show', 'edit', 'update', 'destroy'])->middleware('permission:manage warehouse');
             Route::post('warehouse/picking-orders/{warehousePickingOrder}/start', [WarehouseController::class, 'startPicking'])->name('warehouse.picking-orders.start')->middleware('permission:manage warehouse');

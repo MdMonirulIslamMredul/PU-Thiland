@@ -69,9 +69,18 @@ class TeamMemberController extends Controller
     private function validatedData(Request $request): array
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'designation' => ['required', 'string', 'max:255'],
-            'bio' => ['nullable', 'string'],
+            'name' => ['required', 'array'],
+            'name.en' => ['required', 'string', 'max:255'],
+            'name.bn' => ['nullable', 'string', 'max:255'],
+            'name.zh' => ['nullable', 'string', 'max:255'],
+            'designation' => ['required', 'array'],
+            'designation.en' => ['required', 'string', 'max:255'],
+            'designation.bn' => ['nullable', 'string', 'max:255'],
+            'designation.zh' => ['nullable', 'string', 'max:255'],
+            'bio' => ['nullable', 'array'],
+            'bio.en' => ['nullable', 'string'],
+            'bio.bn' => ['nullable', 'string'],
+            'bio.zh' => ['nullable', 'string'],
             'facebook_url' => ['nullable', 'url', 'max:255'],
             'linkedin_url' => ['nullable', 'url', 'max:255'],
             'twitter_url' => ['nullable', 'url', 'max:255'],
