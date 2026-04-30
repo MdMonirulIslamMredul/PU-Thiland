@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Services\OrderPaymentService;
 use App\Services\PaymentGatewayService;
 use App\Services\VipCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class CartController extends Controller
@@ -120,21 +120,30 @@ class CartController extends Controller
         $vipRule = $vipCalculationService->getEffectiveVipRuleForUser($user);
         $vipDiscount = $vipCalculationService->calculateOrderDiscount($user, $items->toArray());
         $paymentGateways = $paymentGatewayService->getActive();
+        $dueOrdersCount = $user->orders()
+            ->whereIn('payment_status', [Order::PAYMENT_STATUS_UNPAID, Order::PAYMENT_STATUS_PARTIAL])
+            ->count();
+        $dueAmountTotal = $user->orders()
+            ->whereIn('payment_status', [Order::PAYMENT_STATUS_UNPAID, Order::PAYMENT_STATUS_PARTIAL])
+            ->sum('due_amount');
 
         return view('frontend.cart.checkout', [
             'items' => $items,
-            'total' => number_format($total, 2),
-            'totalWeight' => number_format($totalWeight, 2),
-            'vipDiscount' => number_format($vipDiscount, 2),
-            'finalTotal' => number_format(max(0, $total - $vipDiscount), 2),
+            'total' => $total,
+            'totalWeight' => $totalWeight,
+            'vipDiscount' => $vipDiscount,
+            'finalTotal' => max(0, $total - $vipDiscount),
             'user' => $user,
             'addresses' => $addresses,
             'vipRule' => $vipRule,
             'paymentGateways' => $paymentGateways,
+            'hasDueOrders' => $dueOrdersCount > 0,
+            'dueOrdersCount' => $dueOrdersCount,
+            'dueAmountTotal' => number_format($dueAmountTotal, 2),
         ]);
     }
 
-    public function placeOrder(Request $request, VipCalculationService $vipCalculationService, PaymentGatewayService $paymentGatewayService)
+    public function placeOrder(Request $request, VipCalculationService $vipCalculationService, PaymentGatewayService $paymentGatewayService, OrderPaymentService $orderPaymentService)
     {
         $cart = session('cart', ['items' => []]);
         $items = collect($cart['items'])->values();
@@ -145,6 +154,10 @@ class CartController extends Controller
 
         $user = Auth::user();
 
+        if ($user->orders()->whereIn('payment_status', [Order::PAYMENT_STATUS_UNPAID, Order::PAYMENT_STATUS_PARTIAL])->exists()) {
+            return redirect()->route('dashboard')->with('error', 'Please settle outstanding orders before placing a new order.');
+        }
+
         $paymentMethods = $paymentGatewayService->getActive()
             ->pluck('mfs_name')
             ->map(fn($name) => strtolower($name))
@@ -152,17 +165,33 @@ class CartController extends Controller
 
         $data = $request->validate([
             'address_id' => ['nullable', 'exists:user_addresses,id'],
-            'delivery_recipient_name' => ['required_without:address_id', 'string', 'max:255'],
-            'delivery_phone' => ['required_without:address_id', 'string', 'max:50'],
-            'delivery_address' => ['required_without:address_id', 'string'],
+            'delivery_recipient_name' => ['nullable', 'required_without:address_id', 'string', 'max:255'],
+            'delivery_phone' => ['nullable', 'required_without:address_id', 'string', 'max:50'],
+            'delivery_address' => ['nullable', 'required_without:address_id', 'string'],
             'save_address' => ['nullable', 'boolean'],
-            'payment_method' => ['required', 'string', Rule::in(array_merge(['wallet'], $paymentMethods))],
+            'payment_method' => ['required', 'string', Rule::in(array_merge(['wallet', 'partial'], $paymentMethods))],
+            'partial_payment_method' => ['nullable', 'string', Rule::in(array_merge(['wallet'], $paymentMethods))],
+            'payment_amount' => ['required_if:payment_method,partial', 'numeric', 'min:0.01'],
             'payment_gateway_id' => ['nullable', 'exists:payment_gateways,id'],
             'payment_proof' => ['nullable', 'image', 'max:2048'],
             'note' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        if ($data['payment_method'] !== 'wallet') {
+        if ($data['payment_method'] === 'partial') {
+            if (empty($data['partial_payment_method'])) {
+                return back()->withErrors(['partial_payment_method' => 'Please select a partial payment method.'])->withInput();
+            }
+
+            if ($data['partial_payment_method'] !== 'wallet') {
+                if (empty($data['payment_gateway_id'])) {
+                    return back()->withErrors(['payment_gateway_id' => 'Please select a payment gateway for partial payment.'])->withInput();
+                }
+
+                if (! $request->hasFile('payment_proof')) {
+                    return back()->withErrors(['payment_proof' => 'Please upload a payment receipt image for partial payment.'])->withInput();
+                }
+            }
+        } elseif ($data['payment_method'] !== 'wallet') {
             if (empty($data['payment_gateway_id'])) {
                 return back()->withErrors(['payment_gateway_id' => 'Please select a payment gateway.'])->withInput();
             }
@@ -208,15 +237,34 @@ class CartController extends Controller
         $totalAfterDiscount = max(0, $total - $vipDiscount);
         $vipRule = $vipCalculationService->getEffectiveVipRuleForUser($user);
 
+        $paymentAmount = $totalAfterDiscount;
+        $paymentSourceMethod = $data['payment_method'];
+
+        if ($data['payment_method'] === 'partial') {
+            $paymentAmount = round($data['payment_amount'], 2);
+            if ($paymentAmount > $totalAfterDiscount) {
+                return back()->withErrors(['payment_amount' => 'Payment amount cannot exceed the order total.'])->withInput();
+            }
+            $paymentSourceMethod = $data['partial_payment_method'];
+        }
+
         $rechargeUsedAmount = 0;
-        if ($data['payment_method'] === 'wallet') {
-            $rechargeUsedAmount = min($user->recharge_amount, $totalAfterDiscount);
+        if ($paymentSourceMethod === 'wallet') {
+            if ($paymentAmount > $user->recharge_amount) {
+                return back()->withErrors(['payment_amount' => 'Your wallet balance is insufficient for this payment amount.'])->withInput();
+            }
+
+            $rechargeUsedAmount = $paymentAmount;
             if ($rechargeUsedAmount > 0) {
                 $user->decrement('recharge_amount', $rechargeUsedAmount);
             }
         }
 
-        $finalTotal = max(0, $totalAfterDiscount - $rechargeUsedAmount);
+        $paidAmount = $paymentAmount;
+        $dueAmount = max(0, $totalAfterDiscount - $paymentAmount);
+        $paymentStatus = $dueAmount > 0 ? Order::PAYMENT_STATUS_PARTIAL : Order::PAYMENT_STATUS_PAID;
+
+        $finalTotal = max(0, $totalAfterDiscount - $paidAmount);
 
         $paymentReceiptPath = null;
         if ($request->hasFile('payment_proof')) {
@@ -228,6 +276,9 @@ class CartController extends Controller
             'status' => Order::STATUS_PENDING,
             'vip_level' => $vipRule?->level_name,
             'total_amount' => $totalAfterDiscount,
+            'paid_amount' => $paidAmount,
+            'due_amount' => $dueAmount,
+            'payment_status' => $paymentStatus,
             'total_weight' => $totalWeight,
             'vip_discount_amount' => $vipDiscount,
             'payment_method' => $data['payment_method'],
@@ -239,6 +290,23 @@ class CartController extends Controller
             'delivery_phone' => $deliveryPhone,
             'delivery_address' => $deliveryAddress,
         ]);
+
+        if ($paidAmount > 0) {
+            $paymentGateway = null;
+            if (! empty($data['payment_gateway_id'])) {
+                $paymentGateway = $paymentGatewayService->find($data['payment_gateway_id']);
+            }
+
+            $orderPaymentService->createPayment(
+                $order,
+                $paidAmount,
+                $paymentSourceMethod,
+                $paymentGateway,
+                $paymentReceiptPath,
+                'Checkout payment',
+                OrderPaymentService::STATUS_CONFIRMED
+            );
+        }
 
         foreach ($items as $item) {
             OrderItem::create([

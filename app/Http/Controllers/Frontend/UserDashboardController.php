@@ -28,6 +28,9 @@ class UserDashboardController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
+        $this->vipCalculationService->getEffectiveVipRuleForUser($user);
+        $user->refresh();
+
         $orders = Order::where('user_id', $user->id)
             ->withCount('items')
             ->latest()
@@ -70,9 +73,10 @@ class UserDashboardController extends Controller
         $user = request()->user();
         abort_unless($user?->id === $order->user_id, 404);
 
-        $order->load('items');
+        $order->load(['items', 'payments.paymentGateway']);
+        $paymentGateways = $this->paymentGatewayService->getActive();
 
-        return view('user.orders.show', compact('order'));
+        return view('user.orders.show', compact('order', 'paymentGateways'));
     }
 
     private function getNextVipProgress($user): array
