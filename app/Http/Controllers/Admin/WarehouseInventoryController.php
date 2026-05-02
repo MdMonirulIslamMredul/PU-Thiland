@@ -90,6 +90,7 @@ class WarehouseInventoryController extends Controller
         $inventory->update([
             'grade' => $data['grade'],
             'specification' => $data['specification'],
+            'avg_cost' => (float) $data['unit_cost'],
         ]);
 
         return redirect()->route('admin.inventory.index')->with('success', 'Inventory item updated successfully.');
