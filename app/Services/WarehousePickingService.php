@@ -104,7 +104,16 @@ class WarehousePickingService
 
     public function countPendingOrders(): int
     {
-        return WarehousePickingOrder::where('status', WarehousePickingOrder::STATUS_PENDING)->count();
+        $pendingPickingOrders = WarehousePickingOrder::whereIn('status', [
+            WarehousePickingOrder::STATUS_PENDING,
+            WarehousePickingOrder::STATUS_PICKING,
+        ])->count();
+
+        $confirmedOrdersWithoutPicking = Order::where('status', Order::STATUS_CONFIRMED)
+            ->whereDoesntHave('warehousePickingOrder')
+            ->count();
+
+        return $pendingPickingOrders + $confirmedOrdersWithoutPicking;
     }
 
     protected function calculateOrderWeight(Order $order): float

@@ -1,10 +1,10 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit Picking Order')
+@section('title', ln('Edit Picking Order', 'পিকিং অর্ডার সম্পাদনা', '编辑拣货订单'))
 
 @section('content')
     <div class="mb-4">
-        <h4>Edit Picking Order #{{ $order->id }}</h4>
+        <h4>{{ ln('Edit Picking Order', 'পিকিং অর্ডার সম্পাদনা', '编辑拣货订单') }} #{{ $order->id }}</h4>
     </div>
 
     <div class="card p-4">
@@ -13,12 +13,13 @@
             @method('PUT')
 
             <div class="mb-3">
-                <label class="form-label">Order Reference</label>
-                <input type="text" class="form-control" value="{{ $order->order?->order_number ?? 'N/A' }}" readonly>
+                <label class="form-label">{{ ln('Order Reference', 'অর্ডার রেফারেন্স', '订单参考') }}</label>
+                <input type="text" class="form-control"
+                    value="{{ $order->order?->order_number ?? ln('N/A', 'প্রযোজ্য নয়', '不适用') }}" readonly>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Status</label>
+                <label class="form-label">{{ ln('Status', 'স্থিতি', '状态') }}</label>
                 <select name="status" class="form-select @error('status') is-invalid @enderror" required>
                     @foreach ($statuses as $value => $label)
                         <option value="{{ $value }}" {{ old('status', $order->status) == $value ? 'selected' : '' }}>
@@ -31,9 +32,9 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Assigned To</label>
+                <label class="form-label">{{ ln('Assigned To', 'নির্ধারিত ব্যক্তি', '分配给') }}</label>
                 <select name="assigned_to" class="form-select @error('assigned_to') is-invalid @enderror">
-                    <option value="">Unassigned</option>
+                    <option value="">{{ ln('Unassigned', 'নির্ধারিত নয়', '未分配') }}</option>
                     @foreach ($admins as $admin)
                         <option value="{{ $admin->id }}"
                             {{ old('assigned_to', $order->assigned_to) == $admin->id ? 'selected' : '' }}>
@@ -46,7 +47,7 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Note</label>
+                <label class="form-label">{{ ln('Note', 'নোট', '备注') }}</label>
                 <textarea name="note" class="form-control @error('note') is-invalid @enderror" rows="4">{{ old('note', $order->note) }}</textarea>
                 @error('note')
                     <div class="invalid-feedback">{{ $message }}</div>
@@ -54,8 +55,9 @@
             </div>
 
             <div class="d-flex justify-content-between">
-                <a href="{{ route('admin.picking-orders.index') }}" class="btn btn-secondary">Cancel</a>
-                <button class="btn btn-primary">Save Changes</button>
+                <a href="{{ route('admin.picking-orders.index') }}"
+                    class="btn btn-secondary">{{ ln('Cancel', 'বাতিল', '取消') }}</a>
+                <button class="btn btn-primary">{{ ln('Save Changes', 'পরিবর্তন সংরক্ষণ', '保存更改') }}</button>
             </div>
         </form>
     </div>

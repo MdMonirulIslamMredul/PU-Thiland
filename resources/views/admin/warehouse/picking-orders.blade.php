@@ -1,18 +1,19 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Warehouse Picking Orders')
+@section('title', ln('Warehouse Picking Orders', 'গুদাম পিকিং অর্ডার', '仓库拣货订单'))
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4>Warehouse Picking Orders</h4>
-        <a href="{{ route('admin.warehouse.dashboard') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+        <h4>{{ ln('Warehouse Picking Orders', 'গুদাম পিকিং অর্ডার', '仓库拣货订单') }}</h4>
+        <a href="{{ route('admin.warehouse.dashboard') }}"
+            class="btn btn-outline-secondary">{{ ln('Back to Dashboard', 'ড্যাশবোর্ডে ফিরুন', '返回仪表板') }}</a>
     </div>
 
     <div class="card p-3 mb-4">
-        <h5>Create Picking Order</h5>
+        <h5>{{ ln('Create Picking Order', 'পিকিং অর্ডার তৈরি করুন', '创建拣货订单') }}</h5>
         @if (empty($availableOrders) || $availableOrders->isEmpty())
             <div class="alert alert-secondary mb-0">
-                No confirmed orders are available for warehouse picking.
+                {{ ln('No confirmed orders are available for warehouse picking.', 'গুদাম পিকিংয়ের জন্য কোনও নিশ্চিত অর্ডার নেই।', '没有可用于仓库拣货的已确认订单。') }}
             </div>
         @else
             <div class="row g-3">
@@ -21,17 +22,18 @@
                         <div class="card p-3 h-100">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
-                                    <strong>Order #{{ $order->id }}</strong>
+                                    <strong>{{ ln('Order', 'অর্ডার', '订单') }} #{{ $order->id }}</strong>
                                     <div class="small text-muted">{{ $order->user->name }} |
                                         {{ $order->created_at->format('Y-m-d') }}</div>
                                 </div>
-                                <span class="badge bg-info text-dark">Confirmed</span>
+                                <span class="badge bg-info text-dark">{{ ln('Confirmed', 'নিশ্চিত', '已确认') }}</span>
                             </div>
-                            <p class="mb-2">Total: ${{ number_format($order->total_amount, 2) }}</p>
-                            <form action="{{ route('admin.warehouse.create-picking', $order) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-success">Create Picking</button>
-                            </form>
+                            <p class="mb-2">{{ ln('Total', 'মোট', '总计') }}:
+                                ${{ number_format($order->total_amount, 2) }}</p>
+                            <a href="{{ route('admin.warehouse.orders.show', $order) }}"
+                                class="btn btn-sm btn-outline-primary">
+                                {{ ln('Review Details', 'বিস্তারিত দেখুন', '查看详情') }}
+                            </a>
                         </div>
                     </div>
                 @endforeach
@@ -44,13 +46,13 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Order</th>
-                    <th>Customer</th>
-                    <th>Status</th>
-                    <th>Weight (kg)</th>
-                    <th>Started</th>
-                    <th>Completed</th>
-                    <th class="text-end">Actions</th>
+                    <th>{{ ln('Order', 'অর্ডার', '订单') }}</th>
+                    <th>{{ ln('Customer', 'গ্রাহক', '客户') }}</th>
+                    <th>{{ ln('Status', 'স্থিতি', '状态') }}</th>
+                    <th>{{ ln('Weight (kg)', 'ওজন (কেজি)', '重量（公斤）') }}</th>
+                    <th>{{ ln('Started', 'শুরু হয়েছে', '已开始') }}</th>
+                    <th>{{ ln('Completed', 'সম্পন্ন হয়েছে', '已完成') }}</th>
+                    <th class="text-end">{{ ln('Actions', 'অ্যাকশন', '操作') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,7 +60,7 @@
                     <tr>
                         <td>{{ $order->id }}</td>
                         <td>#{{ $order->order_id }}</td>
-                        <td>{{ $order->order?->user?->name ?? 'Unknown' }}</td>
+                        <td>{{ $order->order?->user?->name ?? ln('Unknown', 'অজানা', '未知') }}</td>
                         <td>
                             @php
                                 $badge = match ($order->status) {
@@ -73,23 +75,13 @@
                         <td>{{ optional($order->started_at)->format('Y-m-d') ?? '—' }}</td>
                         <td>{{ optional($order->completed_at)->format('Y-m-d') ?? '—' }}</td>
                         <td class="text-end">
-                            <a href="{{ route('admin.picking-orders.edit', $order) }}"
-                                class="btn btn-sm btn-outline-primary">Edit</a>
-                            <a href="{{ route('admin.picking-orders.show', $order) }}"
-                                class="btn btn-sm btn-outline-secondary">View</a>
-                            <form action="{{ route('admin.picking-orders.destroy', $order) }}" method="POST"
-                                class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger"
-                                    onclick="return confirm('Delete this picking order?')">Delete</button>
-                            </form>
+
 
                             @if ($order->status === 'pending')
                                 <form action="{{ route('admin.warehouse.picking-orders.start', $order) }}" method="POST"
                                     class="d-inline">
                                     @csrf
-                                    <button class="btn btn-sm btn-outline-primary">Start</button>
+                                    <button class="btn btn-sm btn-outline-primary">{{ ln('Start', 'শুরু', '开始') }}</button>
                                 </form>
                             @endif
 
@@ -98,21 +90,38 @@
                                     <form action="{{ route('admin.warehouse.picking-orders.complete', $order) }}"
                                         method="POST" class="d-inline">
                                         @csrf
-                                        <button class="btn btn-sm btn-outline-success">Complete</button>
+                                        <button
+                                            class="btn btn-sm btn-outline-success">{{ ln('Complete', 'সম্পন্ন', '完成') }}</button>
                                     </form>
                                 @else
                                     <button class="btn btn-sm btn-outline-secondary" disabled
-                                        title="{{ $order->completion_error ?? 'Cannot complete this order.' }}">Complete</button>
+                                        title="{{ $order->completion_error ?? ln('Cannot complete this order.', 'এই অর্ডার সম্পন্ন করা যাচ্ছে না।', '无法完成此订单。') }}">{{ ln('Complete', 'সম্পন্ন', '完成') }}</button>
                                     @if (!empty($order->completion_error))
                                         <div class="small text-danger mt-1">{{ $order->completion_error }}</div>
                                     @endif
                                 @endif
                             @endif
+
+
+                            <a href="{{ route('admin.picking-orders.edit', $order) }}"
+                                class="btn btn-sm btn-outline-primary">{{ ln('Edit', 'সম্পাদনা', '编辑') }}</a>
+                            <a href="{{ route('admin.picking-orders.show', $order) }}"
+                                class="btn btn-sm btn-outline-secondary">{{ ln('View', 'দেখুন', '查看') }}</a>
+                            <form action="{{ route('admin.picking-orders.destroy', $order) }}" method="POST"
+                                class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('{{ ln('Delete this picking order?', 'এই পিকিং অর্ডার মুছবেন?', '删除此拣货订单？') }}')">{{ ln('Delete', 'মুছুন', '删除') }}</button>
+                            </form>
+
+
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center">No picking orders found.</td>
+                        <td colspan="8" class="text-center">
+                            {{ ln('No picking orders found.', 'কোনও পিকিং অর্ডার পাওয়া যায়নি।', '未找到拣货订单。') }}</td>
                     </tr>
                 @endforelse
             </tbody>

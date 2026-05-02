@@ -74,8 +74,69 @@ class WarehousePickingOrderController extends Controller
 
     public function show(WarehousePickingOrder $pickingOrder)
     {
+        $pickingOrder->load([
+            'assignedTo',
+            'order.user',
+            'order.userAddress',
+            'order.items.product',
+            'order.payments.paymentGateway',
+        ]);
+
+        $salesOrder = $pickingOrder->order;
+        $stockRows = collect();
+        $stockReady = false;
+        $stockAlerts = collect();
+
+        if ($salesOrder && $salesOrder->items->isNotEmpty()) {
+            $productIds = $salesOrder->items
+                ->pluck('product_id')
+                ->filter()
+                ->unique()
+                ->values();
+
+            $inventoryLevels = WarehouseInventoryItem::whereIn('product_id', $productIds)
+                ->pluck('quantity_kg', 'product_id');
+
+            $stockRows = $salesOrder->items->map(function ($item, $index) use ($inventoryLevels) {
+                $quantity = (float) $item->quantity;
+                $unitWeight = (float) ($item->product?->weight ?? 0);
+                $requiredWeight = $quantity * $unitWeight;
+                $availableWeight = (float) ($inventoryLevels[$item->product_id] ?? 0);
+                $shortageWeight = max(0, $requiredWeight - $availableWeight);
+                $productTitleEn = $item->product?->getTranslation('title', 'en', false) ?: ($item->product_name ?: 'Unknown Product');
+                $productTitleBn = $item->product?->getTranslation('title', 'bn', false) ?: $productTitleEn;
+                $productTitleZh = $item->product?->getTranslation('title', 'zh', false) ?: $productTitleEn;
+
+                return [
+                    'index' => $index + 1,
+                    'product_name' => $item->product?->getTranslation('title', app()->getLocale(), false) ?: $productTitleEn,
+                    'product_name_en' => $productTitleEn,
+                    'product_name_bn' => $productTitleBn,
+                    'product_name_zh' => $productTitleZh,
+                    'quantity' => $quantity,
+                    'unit_weight' => $unitWeight,
+                    'required_weight' => $requiredWeight,
+                    'available_weight' => $availableWeight,
+                    'shortage_weight' => $shortageWeight,
+                    'unit_price' => (float) $item->product_price,
+                    'line_total' => (float) ($item->total_price ?? ((float) $item->product_price * $quantity)),
+                    'ready' => $shortageWeight <= 0,
+                ];
+            });
+
+            $stockReady = $stockRows->every(fn($row) => $row['ready']);
+
+            $stockAlerts = $stockRows
+                ->filter(fn($row) => !$row['ready'])
+                ->map(fn($row) => $row['product_name'] . ' (short by ' . number_format($row['shortage_weight'], 3) . ' kg)')
+                ->values();
+        }
+
         return view('admin.warehouse.picking-orders.show', [
             'order' => $pickingOrder,
+            'stockRows' => $stockRows,
+            'stockReady' => $stockReady,
+            'stockAlerts' => $stockAlerts,
         ]);
     }
 
