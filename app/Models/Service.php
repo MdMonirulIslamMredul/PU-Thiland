@@ -3,9 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
 class Service extends Model
 {
+    use HasTranslations;
+
+    protected $translatable = [
+        'title',
+        'short_description',
+        'description',
+    ];
     protected $fillable = [
         'title',
         'slug',

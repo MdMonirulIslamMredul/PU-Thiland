@@ -8,7 +8,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Title</th>
+                    <th>Title (BN / ZH)</th>
                     <th>Image</th>
                     <th>Status</th>
                     <th></th>
@@ -17,7 +17,14 @@
             <tbody>
                 @forelse($services as $service)
                     <tr>
-                        <td>{{ $service->title }}</td>
+                        <td>
+                            <div><span
+                                    class="badge text-bg-light me-1">BN</span>{{ $service->getTranslation('title', 'bn', false) ?: '-' }}
+                            </div>
+                            <div><span
+                                    class="badge text-bg-light me-1">ZH</span>{{ $service->getTranslation('title', 'zh', false) ?: '-' }}
+                            </div>
+                        </td>
                         <td>
                             @if ($service->image)
                                 <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}"

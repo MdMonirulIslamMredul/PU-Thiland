@@ -1,11 +1,11 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Services')
+@section('title', __('site.services.title'))
 
 @section('content')
     <section class="py-5">
         <div class="container">
-            <h1 class="section-title mb-4">Services</h1>
+            <h1 class="section-title mb-4">{{ __('site.services.heading') }}</h1>
             <div class="row g-4">
                 @forelse($services as $service)
                     <div class="col-md-6 col-lg-4" data-aos="fade-up">
@@ -22,11 +22,11 @@
                             <h5>{{ $service->title }}</h5>
                             <p>{{ $service->short_description }}</p>
                             <a href="{{ route('services.show', $service->slug) }}"
-                                class="btn btn-outline-dark btn-sm mt-auto">Details</a>
+                                class="btn btn-outline-dark btn-sm mt-auto">{{ __('site.services.details') }}</a>
                         </div>
                     </div>
                 @empty
-                    <p>No services found.</p>
+                    <p>{{ __('site.services.no_services_found') }}</p>
                 @endforelse
             </div>
             <div class="mt-4">{{ $services->links() }}</div>

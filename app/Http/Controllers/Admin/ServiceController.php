@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ServiceController extends Controller
 {
@@ -70,17 +69,26 @@ class ServiceController extends Controller
     private function validatedData(Request $request, ?int $id = null): array
     {
         $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'array'],
+            'title.en' => ['nullable', 'string', 'max:255'],
+            'title.bn' => ['required', 'string', 'max:255'],
+            'title.zh' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:services,slug,' . ($id ?? 'NULL') . ',id'],
-            'short_description' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            'short_description' => ['required', 'array'],
+            'short_description.en' => ['nullable', 'string', 'max:255'],
+            'short_description.bn' => ['required', 'string', 'max:255'],
+            'short_description.zh' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'array'],
+            'description.en' => ['nullable', 'string'],
+            'description.bn' => ['required', 'string'],
+            'description.zh' => ['required', 'string'],
             'is_featured' => ['nullable', 'boolean'],
             'status' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'image' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+        $data['slug'] = $data['slug'] ?? $this->slugFromTranslation($data['title']);
         $data['is_featured'] = $request->boolean('is_featured');
         $data['status'] = $request->boolean('status', true);
         $data['sort_order'] = $data['sort_order'] ?? 0;
