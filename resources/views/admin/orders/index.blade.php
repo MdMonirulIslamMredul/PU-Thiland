@@ -96,14 +96,38 @@
                                     <div class="small mt-1 text-danger">Due:
                                         ৳{{ number_format($order->due_amount ?? $order->total_amount, 2) }}</div>
                                 @endif
+
+                                @if (!empty($order->pending_payments_count) && $order->pending_payments_count > 0)
+                                    <div class="small mt-1">
+                                        <span
+                                            class="badge bg-warning text-dark">{{ ln('Pending payment', 'পেমেন্ট অপেক্ষমান', '待处理付款') }}</span>
+                                    </div>
+                                @endif
                             </td>
                             <td><span
                                     class="badge bg-{{ $order->status === 'pending' ? 'warning' : ($order->status === 'confirmed' ? 'info' : ($order->status === 'successful' ? 'success' : 'danger')) }}">{{ ucfirst($order->status) }}</span>
                             </td>
                             <td>{{ $order->created_at->format('Y-m-d') }}</td>
                             <td class="text-end">
+
+
                                 <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
                                     {{ ln('View', 'দেখুন', '查看') }}</a>
+
+                                @if ($order->status === 'pending')
+                                    <form action="{{ route('admin.orders.update', $order) }}" method="POST"
+                                        style="display:inline;">
+                                        @csrf
+                                        @method('PUT') {{-- Use PUT or PATCH for updates --}}
+                                        <input type="hidden" name="status" value="confirmed">
+                                        <button type="submit" class="btn btn-sm btn-outline-info">
+                                            {{ ln('Confirm', 'নিশ্চিত করুন', '确认') }}
+                                        </button>
+                                    </form>
+                                @endif
+
+
+
                                 @if ($order->status === 'confirmed' && $order->warehousePickingOrder)
                                     <span class="badge bg-info text-dark">
                                         {{ ln('Picking created', 'পিকিং তৈরি হয়েছে', '已创建拣货') }}</span>

@@ -12,10 +12,25 @@
                 <label class="form-label"> {{ ln('Status', 'স্ট্যাটাস', '状态') }}</label>
                 <select name="status" class="form-select">
                     @foreach ($statuses as $key => $label)
-                        <option value="{{ $key }}" {{ $order->status === $key ? 'selected' : '' }}>
-                            {{ $label }}</option>
+                        @php
+                            $isBlockedSuccessful =
+                                $order->payment_status === \App\Models\Order::PAYMENT_STATUS_PARTIAL &&
+                                $key === \App\Models\Order::STATUS_SUCCESSFUL;
+                        @endphp
+                        <option value="{{ $key }}" {{ $order->status === $key ? 'selected' : '' }}
+                            {{ $isBlockedSuccessful && $order->status !== $key ? 'disabled' : '' }}>
+                            {{ $label }}{{ $isBlockedSuccessful ? ' (' . ln('blocked until due is paid', 'বকেয়া পরিশোধ না হওয়া পর্যন্ত নিষিদ্ধ', '待付清后可用') . ')' : '' }}
+                        </option>
                     @endforeach
                 </select>
+                @error('status')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
+                @if ($order->payment_status === \App\Models\Order::PAYMENT_STATUS_PARTIAL)
+                    <div class="form-text text-danger">
+                        {{ ln('This order has due payment, so it cannot be changed to Successful until fully paid.', 'এই অর্ডারে বকেয়া আছে, তাই পুরো পরিশোধ না হওয়া পর্যন্ত Successful করা যাবে না।', '此订单仍有欠款，未全部付清前不能设为成功。') }}
+                    </div>
+                @endif
             </div>
             <button type="submit" class="btn btn-primary"> {{ ln('Save', 'সংরক্ষণ', '保存') }}</button>
             <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary ms-2">

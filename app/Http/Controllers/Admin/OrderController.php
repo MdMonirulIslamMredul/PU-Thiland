@@ -14,7 +14,11 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = $this->orderQuery($request)->with(['user', 'warehousePickingOrder']);
+        $query = $this->orderQuery($request)
+            ->with(['user', 'warehousePickingOrder'])
+            ->withCount(['payments as pending_payments_count' => function ($q) {
+                $q->where('status', 'pending');
+            }]);
 
         $orders = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
@@ -26,16 +30,45 @@ class OrderController extends Controller
             'payment_status' => $request->input('payment_status', ''),
             'start_date' => $request->input('start_date', ''),
             'end_date' => $request->input('end_date', ''),
+            'user_search' => $request->input('user_search', ''),
         ]);
     }
 
     public function exportPdf(Request $request)
     {
-        $orders = $this->orderQuery($request)->with('user')->orderBy('created_at', 'desc')->get();
+        $orders = $this->orderQuery($request)
+            ->with(['user'])
+            ->withCount(['payments as pending_payments_count' => function ($q) {
+                $q->where('status', 'pending');
+            }])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         $pdf = Pdf::loadView('admin.orders.export-pdf', compact('orders'));
 
         return $pdf->download('orders.pdf');
+    }
+
+    public function report(Request $request)
+    {
+        $orders = $this->orderQuery($request)
+            ->with(['user'])
+            ->withCount(['payments as pending_payments_count' => function ($q) {
+                $q->where('status', 'pending');
+            }])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.orders.report', [
+            'orders' => $orders,
+            'statuses' => Order::statuses(),
+            'paymentStatuses' => Order::paymentStatuses(),
+            'status' => $request->input('status', ''),
+            'payment_status' => $request->input('payment_status', ''),
+            'start_date' => $request->input('start_date', ''),
+            'end_date' => $request->input('end_date', ''),
+            'user_search' => $request->input('user_search', ''),
+        ]);
     }
 
     public function show(Order $order)
@@ -122,6 +155,13 @@ class OrderController extends Controller
             $query->whereDate('created_at', '<=', $request->input('end_date'));
         }
 
+        if ($userSearch = trim($request->input('user_search', ''))) {
+            $query->whereHas('user', function ($query) use ($userSearch) {
+                $query->where('email', 'like', "%{$userSearch}%")
+                    ->orWhere('phone', 'like', "%{$userSearch}%");
+            });
+        }
+
         return $query;
     }
 
@@ -138,6 +178,12 @@ class OrderController extends Controller
         $data = $request->validate([
             'status' => ['required', 'in:' . implode(',', array_keys(Order::statuses()))],
         ]);
+
+        if ($order->payment_status === Order::PAYMENT_STATUS_PARTIAL && $data['status'] === Order::STATUS_SUCCESSFUL) {
+            return back()
+                ->withErrors(['status' => 'Orders with partial payment cannot be marked as successful until the due amount is fully paid.'])
+                ->withInput();
+        }
 
         $order->update($data);
 
