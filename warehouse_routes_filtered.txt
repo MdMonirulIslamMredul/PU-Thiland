@@ -1,0 +1,15 @@
+  GET|HEAD        admin/warehouse admin.warehouse.dashboard GǦ Admin\WarehouseGǪ
+  POST            admin/warehouse/create-picking/{order} admin.warehouse.creaGǪ
+  GET|HEAD        admin/warehouse/inventory admin.inventory.index GǦ Admin\WarGǪ
+  POST            admin/warehouse/inventory admin.inventory.store GǦ Admin\WarGǪ
+  GET|HEAD        admin/warehouse/inventory/create admin.inventory.create GǦ AGǪ
+  PUT|PATCH       admin/warehouse/inventory/{inventory} admin.inventory.updatGǪ
+  DELETE          admin/warehouse/inventory/{inventory} admin.inventory.destrGǪ
+  GET|HEAD        admin/warehouse/inventory/{inventory}/edit admin.inventory.GǪ
+  GET|HEAD        admin/warehouse/picking-orders admin.picking-orders.index  GǪ
+  GET|HEAD        admin/warehouse/picking-orders/{picking_order} admin.pickinGǪ
+  PUT|PATCH       admin/warehouse/picking-orders/{picking_order} admin.pickinGǪ
+  DELETE          admin/warehouse/picking-orders/{picking_order} admin.pickinGǪ
+  GET|HEAD        admin/warehouse/picking-orders/{picking_order}/edit admin.pGǪ
+  POST            admin/warehouse/picking-orders/{warehousePickingOrder}/complete admin.warehouse.picking-orders.complete GǦ Admin\WarehouseController@completePiGǪ
+  POST            admin/warehouse/picking-orders/{warehousePickingOrder}/start admin.warehouse.picking-orders.start GǦ Admin\WarehouseController@startPickiGǪ

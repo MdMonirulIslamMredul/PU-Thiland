@@ -12,7 +12,8 @@
         "laravel/tinker": "^3.0",
         "maatwebsite/excel": "4.x-dev",
         "phpoffice/phpspreadsheet": "5.3",
-        "spatie/laravel-permission": "7.2.2"
+        "spatie/laravel-permission": "7.2.2",
+        "spatie/laravel-translatable": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -27,7 +28,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
