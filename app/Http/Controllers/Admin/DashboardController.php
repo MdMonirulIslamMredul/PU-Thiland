@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\Contact;
+use App\Models\Expense;
 use App\Models\Gallery;
 use App\Models\Order;
 use App\Models\Product;
@@ -37,14 +38,34 @@ class DashboardController extends Controller
         $monthlyAveragePrice = $currentMonthKg > 0 ? $currentMonthSales / $currentMonthKg : 0;
         $yearlyAveragePrice = $currentYearKg > 0 ? $currentYearSales / $currentYearKg : 0;
 
-        $trend = collect(range(5, 0))->map(function ($subMonths) use ($orderBaseQuery, $now) {
+        $todayStart = $now->copy()->startOfDay();
+        $todayEnd = $now->copy()->endOfDay();
+
+        $todaySales = (clone $orderBaseQuery)->whereBetween('created_at', [$todayStart, $todayEnd])->sum('total_amount');
+        $todayExpenses = Expense::whereDate('expense_date', $now->toDateString())->sum('amount');
+        $currentMonthExpenses = Expense::whereBetween('expense_date', [$monthStart, $monthEnd])->sum('amount');
+        $currentYearExpenses = Expense::whereBetween('expense_date', [$yearStart, $yearEnd])->sum('amount');
+
+        $todayNetProfit = $todaySales - $todayExpenses;
+        $currentMonthNetProfit = $currentMonthSales - $currentMonthExpenses;
+        $currentYearNetProfit = $currentYearSales - $currentYearExpenses;
+
+        $cumulativeSales = (clone $orderBaseQuery)->sum('total_amount');
+        $cumulativeExpenses = Expense::sum('amount');
+        $totalAssets = $cumulativeSales - $cumulativeExpenses;
+
+        $trend = collect(range(11, 0))->map(function ($subMonths) use ($orderBaseQuery, $now) {
             $month = $now->copy()->subMonths($subMonths);
             $start = $month->copy()->startOfMonth();
             $end = $month->copy()->endOfMonth();
 
+            $monthSales = (clone $orderBaseQuery)->whereBetween('created_at', [$start, $end])->sum('total_amount');
+            $monthExpenses = Expense::whereBetween('expense_date', [$start, $end])->sum('amount');
+
             return [
                 'label' => $month->format('M Y'),
-                'sales' => (clone $orderBaseQuery)->whereBetween('created_at', [$start, $end])->sum('total_amount'),
+                'sales' => $monthSales,
+                'netProfit' => $monthSales - $monthExpenses,
             ];
         });
 
@@ -64,6 +85,14 @@ class DashboardController extends Controller
             'currentYearKg' => $currentYearKg,
             'currentMonthAvgPrice' => $monthlyAveragePrice,
             'currentYearAvgPrice' => $yearlyAveragePrice,
+            'todaySales' => $todaySales,
+            'todayExpenses' => $todayExpenses,
+            'todayNetProfit' => $todayNetProfit,
+            'currentMonthExpenses' => $currentMonthExpenses,
+            'currentYearExpenses' => $currentYearExpenses,
+            'currentMonthNetProfit' => $currentMonthNetProfit,
+            'currentYearNetProfit' => $currentYearNetProfit,
+            'totalAssets' => $totalAssets,
             'salesTrend' => $trend,
             'outstandingOrders' => Order::whereIn('status', [Order::STATUS_PENDING, Order::STATUS_CONFIRMED])->count(),
         ]);
