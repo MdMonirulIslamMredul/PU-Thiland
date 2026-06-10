@@ -32,9 +32,10 @@
                             <form method="POST" action="{{ route('login.submit') }}">
                                 @csrf
                                 <div class="mb-3">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" name="email" class="form-control" value="{{ old('email') }}"
-                                        required>
+                                    <label class="form-label">Email or Phone</label>
+                                    <input type="text" name="login" class="form-control" value="{{ old('login') }}"
+                                        autocomplete="username"
+                                        placeholder="Email, 01XXXXXXXXX, +880..., 1XXXXXXXXXX, +86..." required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Password</label>
@@ -51,6 +52,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+            {{-- <div class="row justify-content-center mt-3">
+                <div class="col-lg-6 text-center">
+                    <a href="{{ route('admin.login') }}" class="btn btn-secondary">Admin Login</a>
+                </div>
+            </div> --}}
     </section>
 @endsection
