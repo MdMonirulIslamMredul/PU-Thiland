@@ -38,11 +38,15 @@ use App\Http\Controllers\Frontend\AnnouncementController as FrontendAnnouncement
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\PaymentGatewayController;
+use App\Http\Controllers\Admin\ExpenseCategoryController;
+use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\RechargeOrderController;
 use App\Http\Controllers\Admin\VipRuleController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\WarehouseInventoryController;
 use App\Http\Controllers\Admin\WarehousePickingOrderController;
+use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
+use App\Http\Controllers\Frontend\ComplaintController as FrontendComplaintController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['setlocale'])->group(function () {
@@ -96,6 +100,13 @@ Route::middleware(['setlocale'])->group(function () {
         Route::put('/dashboard/addresses/{address}', [UserAccountController::class, 'updateAddress'])->name('dashboard.addresses.update');
         Route::delete('/dashboard/addresses/{address}', [UserAccountController::class, 'destroyAddress'])->name('dashboard.addresses.destroy');
         Route::post('/dashboard/recharge-orders', [RechargeController::class, 'store'])->name('dashboard.recharge-orders.store');
+
+        Route::get('/dashboard/complaints', [FrontendComplaintController::class, 'index'])->name('user.complaints.index');
+        Route::get('/dashboard/complaints/create', [FrontendComplaintController::class, 'create'])->name('user.complaints.create');
+        Route::post('/dashboard/complaints', [FrontendComplaintController::class, 'store'])->name('user.complaints.store');
+        Route::get('/dashboard/complaints/{complaint}', [FrontendComplaintController::class, 'show'])->name('user.complaints.show');
+        Route::post('/dashboard/complaints/{complaint}/reply', [FrontendComplaintController::class, 'reply'])->name('user.complaints.reply');
+
         Route::post('/cart/reorder', [CartController::class, 'reorder'])->name('cart.reorder');
         Route::post('/orders/{order}/payments', [OrderPaymentController::class, 'store'])->name('orders.payments.store');
         Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -158,6 +169,8 @@ Route::middleware(['setlocale'])->group(function () {
 
 
             Route::resource('product-categories', AdminProductCategoryController::class)->except(['show'])->middleware('permission:manage products');
+            Route::resource('expense-categories', ExpenseCategoryController::class)->except(['show']);
+            Route::resource('expenses', ExpenseController::class)->except(['show']);
             Route::resource('product-subcategories', AdminProductSubcategoryController::class)->except(['show'])->middleware('permission:manage products');
             Route::get('products/export/excel', [AdminProductController::class, 'exportExcel'])->name('products.export.excel')->middleware('permission:manage products');
             Route::get('products/export/pdf', [AdminProductController::class, 'exportPdf'])->name('products.export.pdf')->middleware('permission:manage products');
@@ -180,6 +193,11 @@ Route::middleware(['setlocale'])->group(function () {
             Route::post('warehouse/create-picking/{order}', [WarehouseController::class, 'createPickingFromOrder'])->name('warehouse.create-picking')->middleware('permission:manage warehouse');
             Route::resource('vip-rules', VipRuleController::class)->except(['show']);
             Route::resource('services', AdminServiceController::class)->except(['show'])->middleware('permission:Web_Settings');
+
+            Route::get('complaints', [AdminComplaintController::class, 'index'])->name('complaints.index');
+            Route::get('complaints/{complaint}', [AdminComplaintController::class, 'show'])->name('complaints.show');
+            Route::post('complaints/{complaint}/reply', [AdminComplaintController::class, 'reply'])->name('complaints.reply');
+            Route::put('complaints/{complaint}/status', [AdminComplaintController::class, 'updateStatus'])->name('complaints.status');
         });
     });
 });

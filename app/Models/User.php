@@ -15,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'phone', 'password', 'is_admin', 'recharge_amount'])]
+#[Fillable(['name', 'email', 'phone', 'phone_country', 'password', 'is_admin', 'recharge_amount'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -31,14 +31,36 @@ class User extends Authenticatable
         return $this->hasMany(RechargeOrder::class);
     }
 
+    public function recharges(): HasMany
+    {
+        return $this->rechargeOrders();
+    }
+
     public function addresses(): HasMany
     {
         return $this->hasMany(UserAddress::class);
     }
 
+    public function hasUnpaidOrPartialOrders(): bool
+    {
+        return $this->orders()
+            ->whereIn('payment_status', [Order::PAYMENT_STATUS_UNPAID, Order::PAYMENT_STATUS_PARTIAL])
+            ->exists();
+    }
+
     public function vipAudits(): HasMany
     {
         return $this->hasMany(VipAudit::class);
+    }
+
+    public function complaints(): HasMany
+    {
+        return $this->hasMany(Complaint::class);
+    }
+
+    public function complaintMessages(): HasMany
+    {
+        return $this->hasMany(ComplaintMessage::class);
     }
 
     /**

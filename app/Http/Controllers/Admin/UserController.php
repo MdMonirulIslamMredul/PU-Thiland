@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\PhoneNumber;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
@@ -76,14 +77,26 @@ class UserController extends Controller
             'roles.*' => ['string', 'exists:roles,name'],
         ]);
 
-        $adminRoles = ['Super Admin', 'Admin', 'Branch Admin', 'Product Admin'];
+        $normalizedPhone = $this->normalizePhone($data['phone'] ?? null);
+
+        if ($normalizedPhone === false) {
+            return back()
+                ->withErrors(['phone' => 'Please enter a valid Bangladesh or China phone number.'])
+                ->withInput();
+        }
+
+        if ($normalizedPhone !== null && User::where('phone', $normalizedPhone)->exists()) {
+            return back()
+                ->withErrors(['phone' => 'This phone number is already in use.'])
+                ->withInput();
+        }
 
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
+            'phone' => $normalizedPhone,
             'password' => $data['password'],
-            'is_admin' => ! empty(array_intersect($adminRoles, $data['roles'] ?? [])),
+            'is_admin' => ! empty($data['roles'] ?? []),
         ]);
 
         $user->syncRoles($data['roles'] ?? []);
@@ -109,15 +122,41 @@ class UserController extends Controller
             'roles.*' => ['string', 'exists:roles,name'],
         ]);
 
+        $normalizedPhone = $this->normalizePhone($data['phone'] ?? null);
+
+        if ($normalizedPhone === false) {
+            return back()
+                ->withErrors(['phone' => 'Please enter a valid Bangladesh or China phone number.'])
+                ->withInput();
+        }
+
+        if ($normalizedPhone !== null && User::where('phone', $normalizedPhone)->whereKeyNot($user->id)->exists()) {
+            return back()
+                ->withErrors(['phone' => 'This phone number is already in use.'])
+                ->withInput();
+        }
+
 
         $user->name = $data['name'];
         $user->email = $data['email'];
-        $user->phone = $data['phone'] ?? null;
+        $user->phone = $normalizedPhone;
+        $user->is_admin = ! empty($data['roles'] ?? []);
         $user->save();
 
         $user->syncRoles($data['roles'] ?? []);
 
         return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+    }
+
+    private function normalizePhone(?string $phone): string|false|null
+    {
+        if ($phone === null || trim($phone) === '') {
+            return null;
+        }
+
+        $detected = PhoneNumber::normalizeAndDetect($phone);
+
+        return $detected['e164'] ?? false;
     }
 
     public function destroy(User $user)
