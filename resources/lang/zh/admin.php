@@ -70,6 +70,9 @@ return [
         'announcements' => '公告',
         'gallery' => '图库',
         'services' => '服务',
+        'complaints' => '投诉',
+        'expenses' => '费用',
+        'expense_categories' => '费用分类',
     ],
     'dashboard_page' => [
         'title' => '仪表板',

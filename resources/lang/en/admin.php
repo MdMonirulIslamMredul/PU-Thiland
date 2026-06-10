@@ -70,6 +70,9 @@ return [
         'announcements' => 'Announcements',
         'gallery' => 'Gallery',
         'services' => 'Services',
+        'complaints' => 'Complaints',
+        'expenses' => 'Expenses',
+        'expense_categories' => 'Expense Categories',
     ],
     'dashboard_page' => [
         'title' => 'Dashboard',

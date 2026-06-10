@@ -70,6 +70,10 @@ return [
         'announcements' => 'ঘোষণা',
         'gallery' => 'গ্যালারি',
         'services' => 'সেবা',
+        'complaints' => 'অভিযোগ',
+        'expenses' => 'খরচ',
+        'expense_categories' => 'খরচের ক্যাটেগরি',
+
     ],
     'dashboard_page' => [
         'title' => 'ড্যাশবোর্ড',

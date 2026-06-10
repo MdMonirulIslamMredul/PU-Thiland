@@ -47,7 +47,20 @@
 
     <div class="col-md-6">
         <label class="form-label">Key Values (one item per line)</label>
-        <textarea name="key_values_text" class="form-control" rows="6">{{ old('key_values_text', isset($about) && is_array($about->key_values) ? implode(PHP_EOL, $about->key_values) : '') }}</textarea>
+        @php
+            $rawKeyValues = $about->key_values ?? [];
+            $flatKeyValues = [];
+            if (is_array($rawKeyValues)) {
+                $flatKeyValues = $rawKeyValues;
+                if (!empty($rawKeyValues)) {
+                    $first = reset($rawKeyValues);
+                    if (is_array($first)) {
+                        $flatKeyValues = $rawKeyValues[app()->getLocale()] ?? $first;
+                    }
+                }
+            }
+        @endphp
+        <textarea name="key_values_text" class="form-control" rows="6">{{ old('key_values_text', implode(PHP_EOL, $flatKeyValues)) }}</textarea>
     </div>
 
     <div class="col-md-6">
