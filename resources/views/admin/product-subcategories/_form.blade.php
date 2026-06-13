@@ -10,11 +10,12 @@
             @endforeach
         </select>
     </div>
-    <div class="col-md-6">
-        <label class="form-label">Name</label>
-        <input type="text" name="name" class="form-control"
-            value="{{ old('name', $productSubcategory->name ?? '') }}" required>
-    </div>
+    @include('admin.partials.translatable-field', [
+        'name' => 'name',
+        'label' => 'Name',
+        'model' => $productSubcategory ?? null,
+        'colClass' => 'col-md-6',
+    ])
     <div class="col-md-6">
         <label class="form-label">Slug</label>
         <input type="text" name="slug" class="form-control"
@@ -31,7 +32,13 @@
         <label class="form-check-label">Active</label>
     </div>
     <div class="col-12">
-        <label class="form-label">Description</label>
-        <textarea name="description" class="form-control" rows="4">{{ old('description', $productSubcategory->description ?? '') }}</textarea>
+        @include('admin.partials.translatable-field', [
+            'name' => 'description',
+            'label' => 'Description',
+            'model' => $productSubcategory ?? null,
+            'type' => 'textarea',
+            'rows' => 4,
+            'colClass' => 'col-12',
+        ])
     </div>
 </div>

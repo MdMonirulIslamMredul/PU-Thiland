@@ -7,9 +7,16 @@ use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 class ProductSubcategory extends Model
 {
+    use HasTranslations;
+
+    protected $translatable = [
+        'name',
+        'description',
+    ];
     protected $fillable = [
         'product_category_id',
         'name',
