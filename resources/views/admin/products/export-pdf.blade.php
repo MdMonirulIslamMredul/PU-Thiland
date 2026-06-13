@@ -39,6 +39,7 @@
                 <th>Price</th>
                 <th>Open Price</th>
                 <th>Quantity</th>
+                <th>Weight</th>
                 <th>Unit Type</th>
                 <th>Unit Name</th>
                 <th>Grade</th>
@@ -55,6 +56,7 @@
                     <td>{{ $product->price }}</td>
                     <td>{{ $product->open_price }}</td>
                     <td>{{ $product->quantity }}</td>
+                    <td>{{ $product->weight }}</td>
                     <td>{{ ucfirst($product->unit_type) }}</td>
                     <td>{{ $product->unit_name }}</td>
                     <td>{{ $product->grade }}</td>
