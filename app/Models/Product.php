@@ -6,9 +6,17 @@ use App\Models\ProductCategory;
 use App\Models\ProductSubcategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Translatable\HasTranslations;
 
 class Product extends Model
 {
+    use HasTranslations;
+
+    protected $translatable = [
+        'title',
+        'short_description',
+        'description',
+    ];
     protected $fillable = [
         'title',
         'slug',
@@ -20,6 +28,7 @@ class Product extends Model
         'specification',
         'open_price',
         'quantity',
+        'weight',
         'unit_type',
         'unit_name',
         'product_category_id',
@@ -33,6 +42,7 @@ class Product extends Model
         'price' => 'decimal:2',
         'open_price' => 'decimal:2',
         'quantity' => 'decimal:2',
+        'weight' => 'decimal:2',
         'is_featured' => 'boolean',
         'status' => 'boolean',
     ];
