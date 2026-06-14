@@ -4,12 +4,12 @@
 
 <div class="row g-3">
     <div class="col-12">
-        <label class="form-label">Role name</label>
+        <label class="form-label">{{ ln('Role name', 'ভূমিকা নাম', '角色名称') }}</label>
         <input type="text" name="name" class="form-control" value="{{ old('name', $role?->name) }}" required>
     </div>
 
     <div class="col-12">
-        <label class="form-label">Permissions</label>
+        <label class="form-label">{{ ln('Permissions', 'অনুমতিসমূহ', '权限') }}</label>
         <div class="row g-2">
             @foreach ($permissions as $permission)
                 <div class="col-md-4">
