@@ -6,6 +6,7 @@ use App\Http\Middleware\SetLocale;
 use App\Models\Order;
 use App\Models\RechargeOrder;
 use App\Models\Setting;
+use App\Models\Complaint;
 use App\Models\WarehousePickingOrder;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\App;
@@ -45,10 +46,14 @@ class AppServiceProvider extends ServiceProvider
 
             $pendingRechargeOrdersCount = RechargeOrder::where('status', RechargeOrder::STATUS_PENDING)->count();
 
+            $PendingComplaintsCount = Complaint::where('status', 'open')->count();
+
+
             $pendingPickingOrdersCount = WarehousePickingOrder::whereIn('status', [
                 WarehousePickingOrder::STATUS_PENDING,
                 WarehousePickingOrder::STATUS_PICKING,
             ])->count();
+
 
             $confirmedOrdersWithoutPickingCount = Order::where('status', Order::STATUS_CONFIRMED)
                 ->whereDoesntHave('warehousePickingOrder')
@@ -60,6 +65,7 @@ class AppServiceProvider extends ServiceProvider
                 'sidebarPendingOrdersCount' => $pendingOrdersCount,
                 'sidebarPendingRechargeOrdersCount' => $pendingRechargeOrdersCount,
                 'sidebarPendingWarehouseCount' => $pendingWarehouseCount,
+                'sidebarPendingComplaintsCount' => $PendingComplaintsCount
             ]);
         });
     }
