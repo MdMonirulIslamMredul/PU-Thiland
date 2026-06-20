@@ -9,8 +9,7 @@ use App\Models\User;
 use App\Services\VipAuditService;
 use App\Services\VipRuleService;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\Collection;
+
 
 class VipCalculationService
 {
@@ -24,7 +23,8 @@ class VipCalculationService
         $startOfMonth = Carbon::now()->startOfMonth();
 
         $orders = $user->orders()
-            ->whereIn('status', [Order::STATUS_CONFIRMED, Order::STATUS_SUCCESSFUL])
+            ->whereIn('status', [Order::STATUS_PENDING, Order::STATUS_CONFIRMED, Order::STATUS_SUCCESSFUL])
+            ->where('paid_amount', '>', 0)
             ->where('created_at', '>=', $startOfMonth)
             ->with(['items.product'])
             ->get();
@@ -35,13 +35,10 @@ class VipCalculationService
 
     public function getUserMonthlyRecharge(User $user): float
     {
-        if (! method_exists($user, 'recharges')) {
-            return 0.0;
-        }
-
         $startOfMonth = Carbon::now()->startOfMonth();
 
-        return (float) $user->recharges()
+        return (float) $user->rechargeOrders()
+            ->where('status', 'approved')
             ->where('created_at', '>=', $startOfMonth)
             ->sum('amount');
     }
@@ -107,8 +104,14 @@ class VipCalculationService
 
         $totalWeight = collect($cartItems)
             ->sum(function (array $item) use ($products) {
-                $product = $products->get($item['id']);
                 $quantity = (float) ($item['quantity'] ?? 0);
+                $itemWeight = (float) ($item['weight'] ?? 0);
+
+                if ($itemWeight > 0) {
+                    return $itemWeight * $quantity;
+                }
+
+                $product = $products->get($item['id']);
                 return $this->getProductWeightKg($product, $quantity);
             });
 
@@ -125,7 +128,7 @@ class VipCalculationService
         $unitName = strtolower((string) $product->unit_name);
 
         if ($unitType === 'weight' || str_contains($unitName, 'kg')) {
-            return $quantity;
+            return (float) $product->weight * $quantity;
         }
 
         return 0.0;
