@@ -285,9 +285,9 @@
                                 <p class="lead mb-4">{{ $slide['subtitle'] }}</p>
                                 <div class="d-flex flex-wrap gap-2">
                                     <a href="{{ $setting->cta_button_link ?? route('contact.index') }}"
-                                        class="btn btn-warning btn-lg">{{ $setting->cta_button_text ?? 'Get Consultation' }}</a>
-                                    <a href="{{ route('services.index') }}" class="btn btn-outline-light btn-lg">Our
-                                        Services</a>
+                                        class="btn btn-warning btn-lg">{{ $setting->cta_button_text ?? __('site.home.hero.cta') }}</a>
+                                    <a href="{{ route('services.index') }}"
+                                        class="btn btn-outline-light btn-lg">{{ __('site.home.hero.services') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -297,11 +297,11 @@
 
             <button class="carousel-control-prev" type="button" data-bs-target="#homepageHeroSlider" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
+                <span class="visually-hidden">{{ __('site.home.hero.previous') }}</span>
             </button>
             <button class="carousel-control-next" type="button" data-bs-target="#homepageHeroSlider" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
+                <span class="visually-hidden">{{ __('site.home.hero.next') }}</span>
             </button>
         </div>
     </section>
@@ -313,12 +313,12 @@
             <div class="container">
                 @if ($urgentAnnouncements->isNotEmpty())
                     <div class="alert alert-danger mb-4">
-                        <h4 class="alert-heading mb-2">Urgent Announcements</h4>
+                        <h4 class="alert-heading mb-2">{{ __('site.home.urgent_announcements') }}</h4>
                         @foreach ($urgentAnnouncements as $announcement)
                             <div class="mb-2">
                                 <strong>{{ $announcement->title }}</strong> · {{ $announcement->short_description }}
                                 <a href="{{ route('announcements.show', $announcement) }}"
-                                    class="text-decoration-underline">Read more</a>
+                                    class="text-decoration-underline">{{ __('site.home.read_more') }}</a>
                             </div>
                         @endforeach
                     </div>
@@ -327,11 +327,11 @@
                 @if ($announcements->isNotEmpty())
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <span class="section-subtitle-modern">Announcements</span>
-                            <h2 class="section-title-modern">Latest Important Notices</h2>
+                            <span class="section-subtitle-modern">{{ __('site.announcements.title') }}</span>
+                            <h2 class="section-title-modern">{{ __('site.home.latest_notices') }}</h2>
                         </div>
-                        <a href="{{ route('announcements.index') }}" class="btn btn-outline-dark btn-sm">View all
-                            announcements</a>
+                        <a href="{{ route('announcements.index') }}"
+                            class="btn btn-outline-dark btn-sm">{{ __('site.home.view_all_announcements') }}</a>
                     </div>
                     <div class="row g-4">
                         @foreach ($announcements as $announcement)
@@ -351,7 +351,7 @@
                                         <p class="card-text">{{ $announcement->short_description }}</p>
                                         <div class="mt-auto">
                                             <a href="{{ route('announcements.show', $announcement) }}"
-                                                class="btn btn-outline-dark btn-sm">Read More</a>
+                                                class="btn btn-outline-dark btn-sm">{{ __('site.home.read_more') }}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -373,9 +373,19 @@
                 : 'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=1200&q=80';
 
             $defaultValues = ['Craftsmanship', 'Innovation', 'Sustainability', 'Customer-Centric'];
-            $keyValues = collect($about?->key_values ?? [])
-                ->filter()
-                ->values();
+            $keyValues = collect($about?->key_values ?? []);
+
+            if (
+                $keyValues->isNotEmpty() &&
+                $keyValues->keys()->contains(app()->getLocale()) &&
+                is_array($keyValues->get(app()->getLocale()))
+            ) {
+                $keyValues = collect($keyValues->get(app()->getLocale()));
+            } elseif ($keyValues->isNotEmpty() && is_array($keyValues->first())) {
+                $keyValues = collect($keyValues->first());
+            }
+
+            $keyValues = collect($keyValues)->filter()->values();
             if ($keyValues->isEmpty()) {
                 $keyValues = collect($defaultValues);
             }
@@ -387,8 +397,8 @@
 
         <div class="container">
             <div class="section-header-modern" data-aos="fade-up" data-aos-duration="1200">
-                {{-- <span class="section-subtitle-modern">About Us</span> --}}
-                <h2 class="section-title-modern">{{ $about?->title ?? 'About Us' }}</h2>
+                <span class="section-subtitle-modern">{{ __('site.about.title') }}</span>
+                <h2 class="section-title-modern">{{ $about?->title ?? __('site.about.title') }}</h2>
             </div>
 
             <div class="row gx-5 align-items-center about-row">
@@ -396,18 +406,19 @@
                     <div class="about-image-wrap" style="position:relative;">
                         <img src="{{ $img1 }}" alt="About image" class="about-image">
 
-                        <div class="experience-badge">
+                        {{-- <div class="experience-badge">
                             <div class="exp-number">{{ $about?->years_experience ?? 10 }} +
                             </div>
                             <div class="exp-text">Years Experience</div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
                 <div class="col-lg-6" data-aos="fade-up" data-aos-duration="1200" data-aos-delay="300">
                     <div class="modern-card" style="padding: 2.5rem 2rem 1rem;">
-                        <span class="section-subtitle-modern">About Us</span>
-                        <h2 class="section-title-modern about-title">{{ $about?->title ?? 'Company Overview' }}</h2>
+                        <span class="section-subtitle-modern">{{ __('site.about.title') }}</span>
+                        <h2 class="section-title-modern about-title">
+                            {{ $about?->title ?? __('site.about.company_overview') }}</h2>
                         <div class="content-description-modern about-text" style="font-size: 1.05rem; line-height: 1.8;">
                             {!! $about?->page_details ??
                                 '<p>We build reliable renewable energy systems with long-term performance in mind.</p>' !!}
@@ -415,7 +426,7 @@
 
                         <div class="key-values-card" style="background-image: url('{{ $img2 }}')">
                             <div class="kv-overlay">
-                                <h4 class="kv-title">Our Key Values</h4>
+                                <h4 class="kv-title">{{ __('site.home.key_values') }}</h4>
                                 <div class="row">
                                     <div class="col-6">
                                         <ul class="kv-items">
@@ -547,16 +558,17 @@
         <div class="container">
             <div class="row align-items-center g-4">
                 <div class="col-lg-7" data-aos="fade-right">
-                    <h2 class="section-title">Why Choose Us</h2>
-                    <p class="text-secondary mb-0">Expert solar planning, precision installation, and long-term maintenance
-                        to keep your power generation stable year-round.</p>
+                    <h2 class="section-title">{{ $about?->title ?? 'Why Choose Us' }}</h2>
+                    <p class="text-secondary mb-0">
+                        {{ $about?->details1 ?? 'Expert solar planning, precision installation, and long-term maintenance to keep your power generation stable year-round.' }}
+                    </p>
                 </div>
                 <div class="col-lg-5" data-aos="zoom-in">
                     <div class="card p-4">
                         <ul class="mb-0">
-                            <li>Expert engineers and certified installers</li>
-                            <li>End-to-end project management</li>
-                            <li>Long-term maintenance support</li>
+                            <li>{{ $about?->details2 ?? 'Expert engineers and certified installers' }}</li>
+                            <li>{{ $about?->details3 ?? 'End-to-end project management' }}</li>
+                            <li>{{ $about?->details4 ?? 'Long-term maintenance support' }}</li>
                         </ul>
                     </div>
                 </div>
@@ -569,8 +581,8 @@
         <section class="py-5 counter-section" data-aos="fade-up">
             <div class="container">
                 <div class="text-center mb-4" data-aos="fade-up">
-                    <span class="section-subtitle-modern">Our Success</span>
-                    <h2 class="section-title-modern">We have a proven track record of success.</h2>
+                    <span class="section-subtitle-modern">{{ __('site.home.our_success.label') }}</span>
+                    <h2 class="section-title-modern">{{ __('site.home.our_success.heading') }}</h2>
                 </div>
 
                 <div class="row g-4 justify-content-center">
@@ -606,9 +618,9 @@
 
 
 
-    <section class="py-5">
+    {{-- <section class="py-5">
         <div class="container">
-            <h2 class="section-title mb-4" data-aos="fade-up">Featured Services</h2>
+            <h2 class="section-title mb-4" data-aos="fade-up">{{ __('site.home.featured_services') }}</h2>
             @if ($serviceSlides->isNotEmpty())
                 <div id="featuredServicesCarousel" class="carousel slide section-carousel" data-bs-ride="carousel"
                     data-bs-interval="5000">
@@ -659,11 +671,11 @@
                 <div class="alert alert-light border mb-0">No services found.</div>
             @endif
         </div>
-    </section>
+    </section> --}}
 
     <section class="py-5 bg-white">
         <div class="container">
-            <h2 class="section-title mb-4" data-aos="fade-up">Featured Products</h2>
+            <h2 class="section-title mb-4" data-aos="fade-up">{{ __('site.home.featured_products') }}</h2>
             @if ($productSlides->isNotEmpty())
                 <div id="featuredProductsCarousel" class="carousel slide section-carousel" data-bs-ride="carousel"
                     data-bs-interval="5000">
@@ -722,8 +734,8 @@
         <section class="py-5">
             <div class="container">
                 <div class="text-center mb-4" data-aos="fade-up">
-                    <span class="section-subtitle-modern">Happy Customers</span>
-                    <h2 class="section-title-modern">What clients are expressing about us.</h2>
+                    <span class="section-subtitle-modern">{{ __('site.home.happy_customers.label') }}</span>
+                    <h2 class="section-title-modern">{{ __('site.home.happy_customers.heading') }}</h2>
                 </div>
 
                 <div id="testimonialCarousel" class="carousel slide section-carousel" data-bs-ride="carousel"
@@ -798,8 +810,8 @@
         <section class="py-5">
             <div class="container">
                 <div class="text-center mb-4" data-aos="fade-up">
-                    <span class="section-subtitle-modern">FAQ</span>
-                    <h2 class="section-title-modern">Questions people ask before getting started.</h2>
+                    <span class="section-subtitle-modern">{{ __('site.home.faq.label') }}</span>
+                    <h2 class="section-title-modern">{{ __('site.home.faq.heading') }}</h2>
                 </div>
 
                 <div class="faq-card p-3 p-lg-4" data-aos="fade-up" data-aos-delay="100">
@@ -833,10 +845,10 @@
     <section class="py-5">
         <div class="container" data-aos="fade-up">
             <div class="card p-4 p-lg-5 text-center">
-                <h3>{{ $setting->cta_title ?? 'Ready to switch to solar?' }}</h3>
+                <h3>{{ $setting->cta_title ?? __('site.home.cta_section.title') }}</h3>
                 <p class="text-secondary">
-                    {{ $setting->cta_text ?? 'Talk to our experts and get a customized clean-energy plan.' }}</p>
-                <a href="{{ route('contact.index') }}" class="btn btn-dark">Contact Us</a>
+                    {{ $setting->cta_text ?? __('site.home.cta_section.text') }}</p>
+                <a href="{{ route('contact.index') }}" class="btn btn-dark">{{ __('site.home.cta_section.button') }}</a>
             </div>
         </div>
     </section>
