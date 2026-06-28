@@ -1,11 +1,11 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Photo Gallery')
+@section('title', __('site.gallery.photo_gallery'))
 
 @section('content')
     <section class="py-5">
         <div class="container">
-            <h1 class="section-title mb-4">Photo Gallery</h1>
+            <h1 class="section-title mb-4">{{ __('site.gallery.photo_gallery') }}</h1>
             <div class="row g-4 gallery-grid">
                 @forelse($items as $item)
                     <div class="col-md-6 col-lg-3" data-aos="zoom-in">
@@ -22,7 +22,7 @@
                     </div>
                 @empty
                     <div class="col-12">
-                        <p>No gallery photos yet.</p>
+                        <p>{{ __('site.gallery.no_photos') }}</p>
                     </div>
                 @endforelse
             </div>
@@ -30,7 +30,8 @@
         </div>
     </section>
 
-    <div class="gallery-lightbox" id="galleryLightbox" aria-hidden="true" role="dialog" aria-label="Photo viewer">
+    <div class="gallery-lightbox" id="galleryLightbox" aria-hidden="true" role="dialog"
+        aria-label="{{ __('site.gallery.photo_viewer') }}">
         <button type="button" class="gallery-close" id="galleryClose" aria-label="Close gallery">
             <i class="bi bi-x-lg"></i>
         </button>
@@ -219,6 +220,10 @@
                     closeLightbox();
                 }
             });
+
+            prevBtn.setAttribute('aria-label', '{{ __('site.gallery.previous_photo') }}');
+            nextBtn.setAttribute('aria-label', '{{ __('site.gallery.next_photo') }}');
+            closeBtn.setAttribute('aria-label', '{{ __('site.gallery.close_gallery') }}');
 
             prevBtn.addEventListener('click', () => {
                 updateLightbox((currentIndex - 1 + thumbs.length) % thumbs.length);

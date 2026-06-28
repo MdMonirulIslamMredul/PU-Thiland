@@ -1,11 +1,11 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Video Gallery')
+@section('title', __('site.gallery.video_gallery'))
 
 @section('content')
     <section class="py-5">
         <div class="container">
-            <h1 class="section-title mb-4">Video Gallery</h1>
+            <h1 class="section-title mb-4">{{ __('site.gallery.video_gallery') }}</h1>
             <div class="row g-4">
                 @forelse($items as $item)
                     <div class="col-md-6" data-aos="fade-up">
@@ -15,7 +15,7 @@
                                     src="{{ str_replace('watch?v=', 'embed/', $item->video_url) }}" allowfullscreen></iframe>
                             </div>
                         </div>
-                </div>@empty<p>No videos yet.</p>
+                </div>@empty<p>{{ __('site.gallery.no_videos') }}</p>
                 @endforelse
             </div>
             <div class="mt-4">{{ $items->links() }}</div>
