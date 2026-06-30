@@ -24,16 +24,19 @@
                 <p class="small mb-0"><i class="bi bi-telephone"></i> {{ $footerSetting?->contact_phone }}</p>
             </div>
             <div class="col-lg-3">
-                <h6 class="text-white">Quick Links</h6>
+                <h6 class="text-white">{{ __('site.footer.quick_links') }}</h6>
                 <div class="d-flex flex-column gap-2">
-                    <a href="{{ route('about') }}" class="text-decoration-none text-light">About</a>
-                    <a href="{{ route('products.index') }}" class="text-decoration-none text-light">Products</a>
-                    <a href="{{ route('services.index') }}" class="text-decoration-none text-light">Services</a>
-                    <a href="{{ route('blogs.index') }}" class="text-decoration-none text-light">Blog</a>
+                    <a href="{{ route('about') }}" class="text-decoration-none text-light">{{ __('nav.about') }}</a>
+                    <a href="{{ route('products.index') }}"
+                        class="text-decoration-none text-light">{{ __('nav.products') }}</a>
+                    <a href="{{ route('services.index') }}"
+                        class="text-decoration-none text-light">{{ __('nav.services') }}</a>
+                    <a href="{{ route('blogs.index') }}"
+                        class="text-decoration-none text-light">{{ __('nav.blog') }}</a>
                 </div>
             </div>
             <div class="col-lg-4">
-                <h6 class="text-white">Follow Us</h6>
+                <h6 class="text-white">{{ __('site.footer.follow_us') }}</h6>
                 <div class="d-flex gap-3 fs-5">
                     <a class="text-light" href="{{ $social['facebook'] ?? '#' }}"><i class="bi bi-facebook"></i></a>
                     <a class="text-light" href="{{ $social['linkedin'] ?? '#' }}"><i class="bi bi-linkedin"></i></a>
