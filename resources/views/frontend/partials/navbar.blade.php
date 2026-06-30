@@ -16,23 +16,35 @@
                 class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav ms-auto gap-lg-2">
-                <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('about') }}">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Products</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('services.index') }}">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('team.index') }}">Team</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('announcements.index') }}">Announcements</a>
+                <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">{{ __('nav.home') }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('about') }}">{{ __('nav.about') }}</a></li>
+                <li class="nav-item"><a class="nav-link"
+                        href="{{ route('products.index') }}">{{ __('nav.products') }}</a></li>
+
+                {{-- <li class="nav-item"><a class="nav-link"
+                        href="{{ route('services.index') }}">{{ __('nav.services') }}</a></li> --}}
+
+                <li class="nav-item"><a class="nav-link" href="{{ route('team.index') }}">{{ __('nav.team') }}</a>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('blogs.index') }}">Blog</a></li>
+                <li class="nav-item"><a class="nav-link"
+                        href="{{ route('announcements.index') }}">{{ __('nav.announcements') }}</a>
+                </li>
+
+                {{-- <li class="nav-item"><a class="nav-link" href="{{ route('blogs.index') }}">{{ __('nav.blog') }}</a>
+                </li> --}}
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
-                        data-bs-toggle="dropdown">Gallery</a>
+                        data-bs-toggle="dropdown">{{ __('nav.gallery') }}</a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('gallery.photos') }}">Photo Gallery</a></li>
-                        <li><a class="dropdown-item" href="{{ route('gallery.videos') }}">Video Gallery</a></li>
+                        <li><a class="dropdown-item"
+                                href="{{ route('gallery.photos') }}">{{ __('nav.photo_gallery') }}</a></li>
+                        <li><a class="dropdown-item"
+                                href="{{ route('gallery.videos') }}">{{ __('nav.video_gallery') }}</a></li>
                     </ul>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('contact.index') }}">Contact</a></li>
+                <li class="nav-item"><a class="nav-link"
+                        href="{{ route('contact.index') }}">{{ __('nav.contact') }}</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         {{ strtoupper(app()->getLocale()) }}
@@ -50,7 +62,7 @@
                 </li>
                 <li class="nav-item position-relative">
                     <a class="nav-link" href="{{ route('cart.index') }}">
-                        <i class="bi bi-cart3"></i> Cart
+                        <i class="bi bi-cart3"></i> {{ __('nav.cart') }}
                         @if ($cartCount)
                             <span
                                 class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle"
@@ -59,11 +71,21 @@
                     </a>
                 </li>
                 @guest
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">Login</a>
+
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button"
+                            data-bs-toggle="dropdown">{{ __('nav.login') }}</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('login') }}">{{ __('nav.login') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ route('admin.login') }}">{{ __('nav.admin_login') }}</a>
+                            </li>
+                        </ul>
                     </li>
+
+
                     <li class="nav-item">
-                        <a class="nav-link " href="{{ route('register') }}">Register</a>
+                        <a class="nav-link " href="{{ route('register') }}">{{ __('nav.register') }}</a>
                     </li>
                 @endguest
 
@@ -73,19 +95,21 @@
                             data-bs-toggle="dropdown">{{ auth()->user()->name }}</a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             @if (auth()->user()->is_admin)
-                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                                <li><a class="dropdown-item"
+                                        href="{{ route('admin.dashboard') }}">{{ __('nav.dashboard') }}</a></li>
                                 <li>
                                     <form action="{{ route('admin.logout') }}" method="POST" class="m-0">
                                         @csrf
-                                        <button type="submit" class="dropdown-item">Logout</button>
+                                        <button type="submit" class="dropdown-item">{{ __('nav.logout') }}</button>
                                     </form>
                                 </li>
                             @else
-                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">{{ __('nav.dashboard') }}</a>
+                                </li>
                                 <li>
                                     <form action="{{ route('logout') }}" method="POST" class="m-0">
                                         @csrf
-                                        <button type="submit" class="dropdown-item">Logout</button>
+                                        <button type="submit" class="dropdown-item">{{ __('nav.logout') }}</button>
                                     </form>
                                 </li>
                             @endif
